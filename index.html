@@ -89,6 +89,43 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 .map-node .map-label { text-shadow: 0 1px 4px #020617, 0 0 8px #020617; }
 .map-route-label { fill: #cbd5e1; font-size: 13px; paint-order: stroke; stroke: #0b1717; stroke-width: 5px; stroke-linejoin: round; }
 .map-region-label { color: rgba(203, 213, 225, .24); font: 700 22px 'JetBrains Mono', monospace; letter-spacing: 0; text-transform: uppercase; pointer-events: none; }
+/* ===== Выбор места в поселке (карточки-«двери») ===== */
+.village-nav-grid { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 64vh; overflow-y: auto; padding: 2px 4px 4px 2px; }
+@media (min-width: 640px) { .village-nav-grid { grid-template-columns: 1fr 1fr; } }
+.village-card {
+  position: relative; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  padding: 11px 12px; border-radius: 10px; cursor: pointer;
+  background: linear-gradient(180deg, #141d26 0%, #0b1118 100%);
+  border: 1px solid #26313d;
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, .06), 0 3px 10px rgba(0, 0, 0, .45);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.village-card:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 0 16px rgba(59, 130, 246, .30), inset 0 0 12px rgba(59, 130, 246, .08); }
+.village-card:active { transform: translateY(0) scale(.99); }
+.village-card-ico {
+  flex: none; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 22px;
+  border-radius: 9px; border: 1px solid #2a3746;
+  background: radial-gradient(circle at 50% 32%, rgba(59, 130, 246, .20), rgba(2, 6, 23, .55));
+}
+.village-card-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.village-card-name { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+.village-card-note { font-size: 11px; line-height: 1.3; color: #94a3b8; }
+.village-card-status { font-size: 9.5px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.village-card-status.ok { color: #6ee7b7; }
+.village-card-status.warn { color: #fcd34d; }
+.village-card-status.muted { color: #64748b; }
+.village-card-go {
+  flex: none; align-self: center; padding: 7px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; color: #fff;
+  background: linear-gradient(180deg, #2563eb, #1d4ed8); border: 1px solid #3b82f6; box-shadow: 0 2px 8px rgba(37, 99, 235, .4);
+  white-space: nowrap;
+}
+.village-card:hover .village-card-go { background: linear-gradient(180deg, #3b82f6, #2563eb); }
+.village-card-here { border-color: #f59e0b; box-shadow: 0 0 16px rgba(245, 158, 11, .30), inset 0 0 12px rgba(245, 158, 11, .08); }
+.village-card[disabled] { cursor: default; }
+.village-card[disabled]:hover { transform: none; border-color: #f59e0b; box-shadow: 0 0 16px rgba(245, 158, 11, .30), inset 0 0 12px rgba(245, 158, 11, .08); }
+.village-card-go-here { background: linear-gradient(180deg, #b45309, #92400e); border-color: #f59e0b; box-shadow: none; }
+
+
 
 /* ===== Визуализация комнат бункера (постапокалиптический 2D-стиль) ===== */
 
@@ -358,6 +395,14 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 <div id="bunker-room-desc" class="text-[10px] text-slate-500 mt-2"></div>
 </div>
 
+<!-- Village building rooms (поселок) -->
+<div id="village-rooms" class="hidden bg-slate-900 border border-slate-800 rounded-lg p-3">
+<div class="text-[10px] uppercase tracking-wide text-slate-500 mb-2"><span class="bunker-panel-title">◈ Помещение</span></div>
+<div id="village-room-tabs" class="grid gap-2"></div>
+<div id="village-scene" class="bunker-scene mt-3"></div>
+<div id="village-room-desc" class="text-[10px] text-slate-500 mt-2"></div>
+</div>
+
 <!-- Quick Consumption Buttons -->
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -469,6 +514,12 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 <button id="route-button" onclick="openLocationModal()" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white py-3 px-4 rounded-lg font-bold shadow-lg shadow-blue-900/30 transition flex items-center justify-center gap-2 border border-blue-500/30 cursor-pointer">
 
 🗺️ Выбрать маршрут вылазки
+
+</button>
+
+<button id="village-nav-button" onclick="openVillageNavigationModal()" class="hidden bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 active:scale-[0.98] text-white py-3 px-4 rounded-lg font-bold shadow-lg shadow-amber-900/30 transition flex items-center justify-center gap-2 border border-amber-500/30 cursor-pointer">
+
+🏘️ Дома поселка
 
 </button>
 
@@ -675,6 +726,8 @@ weather: "Ясно",
 location: "Бункер (Убежище)",
 
 bunkerRoom: "main",
+
+villageRoom: null,
 
 dogTamed: false,
 dogFollowing: false,
@@ -1058,12 +1111,12 @@ const routeTimes = {
 '3-2': 90,
 '1-7': 30,
 '7-1': 30,
-'3-4': 10,
-'3-5': 10,
-'3-6': 10,
-'3-9': 10,
-'3-10': 10,
-'3-11': 10,
+'3-4': 2,
+'3-5': 2,
+'3-6': 2,
+'3-9': 2,
+'3-10': 2,
+'3-11': 2,
 '3-8': 120,
 '3-7': 75,
 '7-3': 75,
@@ -1072,9 +1125,9 @@ const routeTimes = {
 
 const routeDistances = {
 '0-1': 1.2, '0-2': 3.4, '0-3': 6.1,
-'2-3': 5.2, '1-7': 2.5, '3-4': 0.7,
-'3-5': 0.7, '3-6': 0.7, '3-9': 0.7,
-'3-10': 0.8, '3-11': 0.8, '3-8': 8.6,
+'2-3': 5.2, '1-7': 2.5, '3-4': 0.3,
+'3-5': 0.3, '3-6': 0.3, '3-9': 0.4,
+'3-10': 0.4, '3-11': 0.4, '3-8': 8.6,
 '3-7': 5.4, '7-8': 12.3
 };
 
@@ -1108,6 +1161,28 @@ const BUNKER_ROOMS = [
 { id: 'garage', label: 'Гараж', icon: '🚗', desc: 'Транспорт и верстак. Ремонт техники возможен даже в метель.' }
 ];
 const BUNKER_ROOM_IDS = BUNKER_ROOMS.map(room => room.id);
+
+// ── База для комнат в домах поселка ────────────────────────────────────────
+// Каждое строение описывается списком комнат. Комната с полем scene получает
+// собственную визуальную сцену (см. buildVillageRoomScene). Сейчас готова
+// комната магазина; остальные легко дорисовать позже, добавив поле scene.
+const VILLAGE_BUILDINGS = {
+4: { label: 'Дом 1 (с капканом)', rooms: [
+{ id: 'dvor', label: 'Двор', desc: 'Дом вредной бабки. У ворот лежит капкан!', scene: 'yardTrap', bg: 'yard' },
+{ id: 'room', label: 'Комната', desc: 'Пыльная комната с сундуком и старым столом.', scene: 'izbaGranny', bg: 'izba' }
+] },
+5: { label: 'Дом 2 «Баба Баджа»', rooms: [
+{ id: 'dvor', label: 'Двор', desc: 'На воротах красуется надпись «РЕСПЕКТ».', scene: 'yardBaba', bg: 'yard' },
+{ id: 'izba', label: 'Изба', desc: 'Тёплая изба гостеприимной хозяйки.', scene: 'izbaBaba', bg: 'izba' }
+] },
+6: { label: 'Дом 3 (с псом)', rooms: [
+{ id: 'dvor', label: 'Двор', desc: 'Пустой дом с разбитым окном, во дворе — будка.', scene: 'yardDog', bg: 'yard' },
+{ id: 'room', label: 'Комната', desc: 'Пыльная пустая комната заброшенного дома.', scene: 'izbaEmpty', bg: 'izba' }
+] },
+9: { label: 'Магазин', rooms: [ { id: 'hall', label: 'Торговый зал', desc: 'Прилавок, полки с товаром и кассирша.', scene: 'shop', bg: 'shop' } ] },
+10: { label: 'Фельдшерский пункт', rooms: [ { id: 'cabinet', label: 'Кабинет', desc: 'Кушетка и шкаф с лекарствами.', scene: 'clinic', bg: 'clinic' } ] },
+11: { label: 'Водоразборная колонка', rooms: [ { id: 'point', label: 'Колонка', desc: 'Ржавая колонка на краю поселка.', scene: 'pump', bg: 'yard' } ] }
+};
 
 // Exploration balance: reasonable limits so one location cannot sprout 5-10 new roads.
 const MAX_NEW_ROADS_PER_LOCATION = 2;
@@ -1176,16 +1251,27 @@ if (hour >= 18 && hour < 22) return 'вечер';
 return 'ночь';
 }
 
+// Перемещение внутри поселка пешком: дома стоят рядом — пара минут на переход.
+const VILLAGE_HOP_MINUTES = 2;
+const VILLAGE_HOP_KM = 0.3;
+function isVillageAreaId(id) {
+const loc = locationsData.find(entry => entry.id === id);
+return Boolean(loc && (loc.village || loc.villageHouse || loc.villageShop));
+}
+
 function getRouteMinutes(fromId, toId) {
 let direct = routeTimes[`${fromId}-${toId}`];
 let reverse = routeTimes[`${toId}-${fromId}`];
-return direct || reverse || null;
+if (direct || reverse) return direct || reverse;
+if (isVillageAreaId(fromId) && isVillageAreaId(toId)) return VILLAGE_HOP_MINUTES;
+return null;
 }
 
 function getRouteDistance(fromId, toId) {
 let direct = routeDistances[`${fromId}-${toId}`];
 let reverse = routeDistances[`${toId}-${fromId}`];
 if (direct || reverse) return direct || reverse;
+if (isVillageAreaId(fromId) && isVillageAreaId(toId)) return VILLAGE_HOP_KM;
 let minutes = getRouteMinutes(fromId, toId);
 return minutes ? Math.round(minutes / 15 * 10) / 10 : null;
 }
@@ -3017,7 +3103,11 @@ const wCqw = (def.w / 700 * 100).toFixed(3);
 const art = assetUrl
 ? `<img class="scene-svg${extra}" width="${wCqw}cqw" src="${assetUrl}" alt="">`
 : `<svg class="scene-svg${extra}" width="${wCqw}cqw" viewBox="0 0 ${def.w} ${def.h}" xmlns="http://www.w3.org/2000/svg">${def.draw(options)}</svg>`;
-return `<div class="${classes.join(' ')}" style="left:${left};bottom:${bottom}">${art}${labelHtml}${sub}</div>`;
+// options.labelAbove — вынести подпись над спрайтом (полезно, если объект стоит
+// позади другого и его подпись иначе перекрывалась бы, как кассирша за прилавком).
+const labelBefore = options.labelAbove ? labelHtml : '';
+const labelAfter = options.labelAbove ? '' : labelHtml;
+return `<div class="${classes.join(' ')}" style="left:${left};bottom:${bottom}">${labelBefore}${art}${labelAfter}${sub}</div>`;
 }
 
 // Дверь входа в бункер (гермозатвор). После «Укрепления входа»
@@ -3190,6 +3280,133 @@ return '<defs><linearGradient id="spGen" x1="0" y1="0" x2="0" y2="1"><stop offse
 + '<rect x="4" y="56" width="76" height="8" rx="2" fill="#3a3f45"/>'
 + '<rect x="6" y="64" width="72" height="6" rx="2" fill="#272b30"/>';
 }
+},
+shopCounter: {
+w: 172, h: 92,
+draw() {
+return '<defs>'
++ '<linearGradient id="spCntTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6c36"/><stop offset="1" stop-color="#6b4a24"/></linearGradient>'
++ '<linearGradient id="spCntFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4a24"/><stop offset="1" stop-color="#3a2812"/></linearGradient>'
++ '</defs>'
++ '<rect x="120" y="8" width="38" height="20" rx="2" fill="#2b3540" stroke="#141b22"/>'
++ '<rect x="124" y="4" width="30" height="7" rx="1.5" fill="#3f4c5a"/>'
++ '<rect x="126" y="6" width="26" height="3" fill="#7dd3fc" opacity="0.7"/>'
++ '<rect x="20" y="14" width="16" height="14" rx="2" fill="#c2410c" stroke="#7c2d12"/>'
++ '<rect x="42" y="10" width="14" height="18" rx="2" fill="#65a30d" stroke="#3f6212"/>'
++ '<ellipse cx="72" cy="22" rx="9" ry="6" fill="#eab308" stroke="#a16207"/>'
++ '<rect x="4" y="28" width="164" height="16" rx="3" fill="url(#spCntTop)" stroke="#33220f"/>'
++ '<rect x="10" y="44" width="152" height="44" rx="2" fill="url(#spCntFront)" stroke="#2e1e0c"/>'
++ '<line x1="62" y1="44" x2="62" y2="88" stroke="#33220f" stroke-width="2"/>'
++ '<line x1="110" y1="44" x2="110" y2="88" stroke="#33220f" stroke-width="2"/>'
++ '<rect x="10" y="60" width="152" height="4" fill="#2e1e0c" opacity="0.6"/>';
+}
+},
+cashier: {
+w: 78, h: 112,
+draw() {
+return '<defs>'
++ '<linearGradient id="spChBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7b4f74"/><stop offset="1" stop-color="#42293f"/></linearGradient>'
++ '<linearGradient id="spChHair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5530"/><stop offset="1" stop-color="#3e2b17"/></linearGradient>'
++ '</defs>'
++ '<path d="M14 112 L14 66 q0 -16 25 -16 q25 0 25 16 L64 112 Z" fill="url(#spChBody)" stroke="#2a1c2e"/>'
++ '<path d="M25 112 L25 74 q0 -9 14 -9 q14 0 14 9 L53 112 Z" fill="#d8c7a6" opacity="0.9"/>'
++ '<rect x="34" y="46" width="10" height="10" fill="#e7b98f"/>'
++ '<circle cx="39" cy="34" r="16" fill="#f0c69b"/>'
++ '<path d="M23 34 q0 -21 16 -21 q16 0 16 21 q-6 -9 -16 -9 q-10 0 -16 9 z" fill="url(#spChHair)"/>'
++ '<circle cx="33" cy="34" r="1.7" fill="#3b2a1a"/><circle cx="45" cy="34" r="1.7" fill="#3b2a1a"/>'
++ '<path d="M34 41 q5 4 10 0" stroke="#8a5a3a" stroke-width="1.4" fill="none"/>';
+}
+},
+shopShelf: {
+w: 150, h: 172,
+draw() {
+let boards = '';
+[30, 78, 126].forEach(function(y) { boards += '<rect x="8" y="' + y + '" width="134" height="7" rx="2" fill="url(#spShWood)" stroke="#2a1d0e"/>'; });
+return '<defs><linearGradient id="spShWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4a24"/><stop offset="1" stop-color="#43301a"/></linearGradient></defs>'
++ '<rect x="6" y="4" width="138" height="164" rx="3" fill="#1c140b" stroke="#2e2013"/>'
++ '<rect x="10" y="6" width="8" height="160" fill="#33240f"/><rect x="132" y="6" width="8" height="160" fill="#33240f"/>'
++ boards
++ '<rect x="16" y="8" width="20" height="20" rx="2" fill="#b45309"/><rect x="40" y="12" width="16" height="16" rx="2" fill="#65a30d"/><rect x="60" y="10" width="18" height="18" rx="2" fill="#0369a1"/>'
++ '<rect x="16" y="56" width="18" height="20" rx="2" fill="#be123c"/><rect x="38" y="58" width="22" height="18" rx="2" fill="#a16207"/><rect x="64" y="60" width="14" height="16" rx="2" fill="#15803d"/>'
++ '<rect x="16" y="106" width="24" height="18" rx="2" fill="#7c2d12"/><rect x="44" y="104" width="16" height="20" rx="2" fill="#4338ca"/><rect x="64" y="108" width="20" height="16" rx="2" fill="#a21caf"/>';
+}
+},
+doghouse: {
+w: 116, h: 92,
+draw() {
+return '<defs>'
++ '<linearGradient id="spDhRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5a2e"/><stop offset="1" stop-color="#4a3419"/></linearGradient>'
++ '<linearGradient id="spDhWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6534"/><stop offset="1" stop-color="#543c20"/></linearGradient>'
++ '</defs>'
++ '<rect x="10" y="34" width="96" height="54" rx="3" fill="url(#spDhWall)" stroke="#3a2710"/>'
++ '<path d="M2 36 L58 2 L114 36 Z" fill="url(#spDhRoof)" stroke="#2f210f"/>'
++ '<path d="M40 88 L40 62 q0 -14 18 -14 q18 0 18 14 L76 88 Z" fill="#120c06"/>'
++ '<line x1="16" y1="50" x2="100" y2="50" stroke="#3a2710" stroke-width="1.5" opacity="0.6"/>'
++ '<line x1="16" y1="66" x2="100" y2="66" stroke="#3a2710" stroke-width="1.5" opacity="0.6"/>'
++ '<line x1="16" y1="82" x2="100" y2="82" stroke="#3a2710" stroke-width="1.5" opacity="0.6"/>';
+}
+},
+trap: {
+w: 82, h: 46,
+draw(o) {
+const disarmed = Boolean(o && o.disarmed);
+const jaws = disarmed
+? '<path d="M12 28 q29 -8 58 0" fill="none" stroke="#9aa7b4" stroke-width="4" stroke-linecap="round"/>'
+: '<path d="M12 32 L24 8 L32 12 L41 4 L50 12 L58 8 L70 32" fill="none" stroke="#9aa7b4" stroke-width="4" stroke-linejoin="round"/>';
+return '<defs><linearGradient id="spTrap" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a97a4"/><stop offset="1" stop-color="#4a5560"/></linearGradient></defs>'
++ '<ellipse cx="41" cy="38" rx="34" ry="7" fill="#0a0f13" opacity="0.4"/>'
++ '<circle cx="41" cy="32" r="16" fill="url(#spTrap)" stroke="#2c353f" stroke-width="2"/>'
++ jaws
++ (disarmed ? '<circle cx="41" cy="32" r="5" fill="#334155"/>' : '<circle cx="41" cy="32" r="4" fill="#7f1d1d"/>');
+}
+},
+pump: {
+w: 86, h: 132,
+draw() {
+return '<defs><linearGradient id="spPump" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b7783"/><stop offset="1" stop-color="#39434e"/></linearGradient></defs>'
++ '<rect x="34" y="44" width="16" height="84" fill="url(#spPump)" stroke="#222a31"/>'
++ '<path d="M42 44 q0 -18 -24 -20 l0 11 q15 2 15 9 z" fill="#5b6b7d" stroke="#222a31"/>'
++ '<rect x="40" y="18" width="36" height="7" rx="3" fill="#8a97a4" stroke="#222a31" transform="rotate(-14 42 22)"/>'
++ '<circle cx="42" cy="44" r="7" fill="#6b7783" stroke="#222a31"/>'
++ '<rect x="24" y="126" width="38" height="6" rx="2" fill="#2c353f"/>'
++ '<circle cx="18" cy="52" r="2" fill="#7dd3fc" opacity="0.8"/><circle cx="14" cy="64" r="1.6" fill="#7dd3fc" opacity="0.6"/>';
+}
+},
+chest: {
+w: 106, h: 72,
+draw() {
+return '<defs><linearGradient id="spChest" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5228"/><stop offset="1" stop-color="#452e12"/></linearGradient></defs>'
++ '<path d="M8 34 q0 -26 45 -26 q45 0 45 26 z" fill="url(#spChest)" stroke="#2e1e0c"/>'
++ '<rect x="8" y="32" width="90" height="34" rx="3" fill="url(#spChest)" stroke="#2e1e0c"/>'
++ '<rect x="8" y="32" width="90" height="6" fill="#2e1e0c" opacity="0.6"/>'
++ '<rect x="44" y="26" width="18" height="22" rx="2" fill="#c9a227" stroke="#6b4410"/>'
++ '<rect x="14" y="42" width="10" height="18" fill="#5b3a1a" opacity="0.7"/><rect x="82" y="42" width="10" height="18" fill="#5b3a1a" opacity="0.7"/>';
+}
+},
+cabinet: {
+w: 112, h: 152,
+draw() {
+return '<defs><linearGradient id="spCab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b6b6a"/><stop offset="1" stop-color="#333f3e"/></linearGradient></defs>'
++ '<rect x="6" y="6" width="100" height="142" rx="4" fill="url(#spCab)" stroke="#1f2928"/>'
++ '<rect x="12" y="12" width="40" height="60" rx="2" fill="#0e1a24" stroke="#1f2928"/>'
++ '<rect x="58" y="12" width="42" height="60" rx="2" fill="#0e1a24" stroke="#1f2928"/>'
++ '<rect x="16" y="24" width="10" height="14" rx="2" fill="#dc2626"/><rect x="30" y="20" width="8" height="18" rx="2" fill="#e2e8f0"/><rect x="42" y="26" width="7" height="12" rx="2" fill="#0ea5e9"/>'
++ '<rect x="62" y="22" width="10" height="16" rx="2" fill="#22c55e"/><rect x="76" y="24" width="8" height="14" rx="2" fill="#f59e0b"/><rect x="88" y="20" width="8" height="18" rx="2" fill="#e2e8f0"/>'
++ '<line x1="6" y1="80" x2="106" y2="80" stroke="#1f2928" stroke-width="3"/>'
++ '<rect x="12" y="86" width="88" height="56" rx="2" fill="#243030" stroke="#1f2928"/>'
++ '<circle cx="26" cy="114" r="3" fill="#8a97a4"/><circle cx="86" cy="114" r="3" fill="#8a97a4"/>';
+}
+},
+signBoard: {
+w: 140, h: 100,
+draw(o) {
+const text = (o && o.text) || '';
+return '<defs><linearGradient id="spSign" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5a2e"/><stop offset="1" stop-color="#5a4022"/></linearGradient></defs>'
++ '<rect x="34" y="42" width="10" height="58" fill="#3a2710"/>'
++ '<rect x="96" y="42" width="10" height="58" fill="#3a2710"/>'
++ '<rect x="6" y="4" width="128" height="46" rx="4" fill="url(#spSign)" stroke="#2e1e0c"/>'
++ '<text x="70" y="35" text-anchor="middle" font-family="monospace" font-size="20" font-weight="700" fill="#f5e6c8">' + text + '</text>';
+}
 }
 };
 
@@ -3288,6 +3505,87 @@ return '<defs>'
 + '<rect x="0" y="250" width="800" height="100" fill="url(#bgGarFloor)"/><rect x="0" y="248" width="800" height="3" fill="#000" opacity="0.5"/>'
 + '<ellipse cx="360" cy="320" rx="70" ry="14" fill="#0a0f13" opacity="0.6"/>'
 + '<rect width="800" height="350" fill="url(#bgGarLight)"/>';
+},
+shop() {
+let planks = '';
+for (let x = 0; x < 800; x += 40) planks += '<line x1="' + x + '" y1="14" x2="' + x + '" y2="250"/>';
+return '<defs>'
++ '<linearGradient id="bgShopWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3326"/><stop offset="0.55" stop-color="#2c2519"/><stop offset="1" stop-color="#1f1910"/></linearGradient>'
++ '<linearGradient id="bgShopFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3a22"/><stop offset="1" stop-color="#241a0e"/></linearGradient>'
++ '<radialGradient id="bgShopLight" cx="0.5" cy="0.32" r="0.62"><stop offset="0" stop-color="rgba(251,191,36,0.30)"/><stop offset="1" stop-color="rgba(251,191,36,0)"/></radialGradient>'
++ '</defs>'
++ '<rect width="800" height="350" fill="url(#bgShopWall)"/>'
++ '<g stroke="#000" stroke-opacity="0.22" stroke-width="1.5">' + planks + '</g>'
++ '<rect x="0" y="0" width="800" height="14" fill="#1c1710"/>'
++ '<rect x="300" y="58" width="182" height="122" fill="#0e1a24" stroke="#12202a" stroke-width="6"/>'
++ '<rect x="303" y="61" width="176" height="116" fill="#5b8aa8" opacity="0.26"/>'
++ '<line x1="391" y1="58" x2="391" y2="180" stroke="#12202a" stroke-width="6"/><line x1="300" y1="119" x2="482" y2="119" stroke="#12202a" stroke-width="6"/>'
++ '<rect x="54" y="36" width="190" height="48" rx="4" fill="#2a2015" stroke="#161009"/>'
++ '<text x="149" y="68" text-anchor="middle" font-family="monospace" font-size="22" font-weight="700" fill="#fcd34d" opacity="0.9">МАГАЗИН</text>'
++ '<rect x="0" y="250" width="800" height="100" fill="url(#bgShopFloor)"/><rect x="0" y="248" width="800" height="3" fill="#000" opacity="0.5"/>'
++ '<ellipse cx="430" cy="320" rx="120" ry="16" fill="#0a0f13" opacity="0.45"/>'
++ '<rect width="800" height="350" fill="url(#bgShopLight)"/>';
+},
+yard() {
+let fence = '';
+for (let x = 340; x <= 780; x += 26) {
+fence += '<rect x="' + x + '" y="178" width="22" height="50" rx="2" fill="#5a4326" stroke="#2f2312"/>';
+fence += '<path d="M' + x + ' 178 L' + (x + 11) + ' 164 L' + (x + 22) + ' 178 Z" fill="#6b5230" stroke="#2f2312"/>';
+}
+return '<defs>'
++ '<linearGradient id="bgYardSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33414f"/><stop offset="1" stop-color="#586472"/></linearGradient>'
++ '<linearGradient id="bgYardGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3d28"/><stop offset="1" stop-color="#241c10"/></linearGradient>'
++ '<radialGradient id="bgYardLight" cx="0.5" cy="0.18" r="0.72"><stop offset="0" stop-color="rgba(203,213,225,0.16)"/><stop offset="1" stop-color="rgba(203,213,225,0)"/></radialGradient>'
++ '</defs>'
++ '<rect width="800" height="350" fill="url(#bgYardSky)"/>'
++ '<rect x="520" y="86" width="150" height="80" fill="#2a2f36"/><path d="M512 86 L595 50 L678 86 Z" fill="#232830"/>'
++ '<rect x="690" y="98" width="112" height="68" fill="#2a2f36"/><path d="M684 98 L746 68 L808 98 Z" fill="#232830"/>'
++ '<rect x="0" y="222" width="800" height="128" fill="url(#bgYardGround)"/>'
++ '<rect x="0" y="220" width="800" height="3" fill="#000" opacity="0.4"/>'
++ '<rect x="30" y="74" width="238" height="148" fill="#5a4a34"/>'
++ '<path d="M14 78 L149 26 L284 78 Z" fill="#3a2a1a"/>'
++ '<rect x="30" y="74" width="238" height="148" fill="#000" opacity="0.12"/>'
++ '<rect x="58" y="112" width="66" height="58" fill="#16232e" stroke="#2a1d10" stroke-width="5"/>'
++ '<line x1="91" y1="112" x2="91" y2="170" stroke="#2a1d10" stroke-width="4"/><line x1="58" y1="141" x2="124" y2="141" stroke="#2a1d10" stroke-width="4"/>'
++ '<rect x="196" y="128" width="52" height="94" fill="#2a1d10"/><circle cx="206" cy="178" r="3" fill="#6b5230"/>'
++ '<rect x="330" y="178" width="470" height="9" rx="3" fill="#6b5230"/>'
++ fence
++ '<rect width="800" height="350" fill="url(#bgYardLight)"/>';
+},
+izba() {
+let logs = '';
+for (let y = 18; y < 250; y += 26) logs += '<line x1="0" y1="' + y + '" x2="800" y2="' + y + '"/>';
+return '<defs>'
++ '<linearGradient id="bgIzbaWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4e2c"/><stop offset="0.6" stop-color="#523a20"/><stop offset="1" stop-color="#3a2815"/></linearGradient>'
++ '<linearGradient id="bgIzbaFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3418"/><stop offset="1" stop-color="#241708"/></linearGradient>'
++ '<radialGradient id="bgIzbaLight" cx="0.42" cy="0.4" r="0.6"><stop offset="0" stop-color="rgba(251,191,36,0.26)"/><stop offset="1" stop-color="rgba(251,191,36,0)"/></radialGradient>'
++ '</defs>'
++ '<rect width="800" height="350" fill="url(#bgIzbaWall)"/>'
++ '<g stroke="#2a1d10" stroke-opacity="0.7" stroke-width="3">' + logs + '</g>'
++ '<rect x="0" y="0" width="800" height="14" fill="#33240f"/>'
++ '<rect x="330" y="70" width="150" height="110" fill="#16232e" stroke="#2a1d10" stroke-width="7"/>'
++ '<line x1="405" y1="70" x2="405" y2="180" stroke="#2a1d10" stroke-width="7"/><line x1="330" y1="125" x2="480" y2="125" stroke="#2a1d10" stroke-width="7"/>'
++ '<rect x="333" y="73" width="144" height="104" fill="#7ba7c4" opacity="0.20"/>'
++ '<rect x="0" y="250" width="800" height="100" fill="url(#bgIzbaFloor)"/><rect x="0" y="248" width="800" height="3" fill="#000" opacity="0.5"/>'
++ '<rect width="800" height="350" fill="url(#bgIzbaLight)"/>';
+},
+clinic() {
+let tiles = '';
+for (let x = 0; x < 800; x += 40) tiles += '<line x1="' + x + '" y1="14" x2="' + x + '" y2="250"/>';
+return '<defs>'
++ '<linearGradient id="bgClinWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#425150"/><stop offset="0.6" stop-color="#33403f"/><stop offset="1" stop-color="#26302f"/></linearGradient>'
++ '<linearGradient id="bgClinFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4a49"/><stop offset="1" stop-color="#1c2524"/></linearGradient>'
++ '<radialGradient id="bgClinLight" cx="0.5" cy="0.3" r="0.62"><stop offset="0" stop-color="rgba(94,234,212,0.18)"/><stop offset="1" stop-color="rgba(94,234,212,0)"/></radialGradient>'
++ '</defs>'
++ '<rect width="800" height="350" fill="url(#bgClinWall)"/>'
++ '<g stroke="#000" stroke-opacity="0.16" stroke-width="1.5">' + tiles + '</g>'
++ '<rect x="0" y="0" width="800" height="14" fill="#20292a"/>'
++ '<rect x="340" y="64" width="160" height="120" fill="#16232e" stroke="#20292a" stroke-width="7"/>'
++ '<line x1="420" y1="64" x2="420" y2="184" stroke="#20292a" stroke-width="7"/><line x1="340" y1="124" x2="500" y2="124" stroke="#20292a" stroke-width="7"/>'
++ '<rect x="343" y="67" width="154" height="114" fill="#8fd7d0" opacity="0.20"/>'
++ '<rect x="96" y="58" width="74" height="74" rx="6" fill="#e2e8f0" opacity="0.85"/><rect x="128" y="70" width="10" height="50" fill="#dc2626"/><rect x="106" y="90" width="54" height="10" fill="#dc2626"/>'
++ '<rect x="0" y="250" width="800" height="100" fill="url(#bgClinFloor)"/><rect x="0" y="248" width="800" height="3" fill="#000" opacity="0.5"/>'
++ '<rect width="800" height="350" fill="url(#bgClinLight)"/>';
 }
 };
 
@@ -3357,6 +3655,135 @@ const body = room === 'kitchen' ? buildKitchenScene() : (room === 'garage' ? bui
 scene.innerHTML = sceneBackground(room) + `<div class="scene-path">${scenePath()}</div>` + `<div class="scene-vignette"></div>` + body;
 }
 
+// ── Комнаты строений поселка (переиспользуют движок сцен бункера) ───────────
+function getCurrentVillageBuilding() {
+const id = getCurrentLocationId();
+const building = VILLAGE_BUILDINGS[id];
+if (!building) return null;
+return { id, label: building.label, rooms: building.rooms || [] };
+}
+
+function setVillageRoom(roomId) {
+state.villageRoom = roomId;
+renderVillageRooms();
+}
+
+// Сцена конкретной комнаты. Для комнат без поля scene пока ничего не рисуем —
+// каркас готов, визуал добавим позже, просто указав ключ сцены.
+function buildVillageRoomScene(key) {
+if (key === 'shop') return buildVillageShopScene();
+if (key === 'yardTrap') return buildVillageTrapYardScene();
+if (key === 'yardBaba') return buildVillageBabaYardScene();
+if (key === 'yardDog') return buildVillageDogYardScene();
+if (key === 'izbaGranny') return buildVillageGrannyRoomScene();
+if (key === 'izbaBaba') return buildVillageBabaRoomScene();
+if (key === 'izbaEmpty') return buildVillageEmptyRoomScene();
+if (key === 'clinic') return buildVillageClinicScene();
+if (key === 'pump') return buildVillagePumpScene();
+return '';
+}
+
+function buildVillageShopScene() {
+let html = '';
+html += sceneSprite('shopShelf', 'Полки с товаром', '13%', '14%');
+html += sceneSprite('cashier', 'Кассирша', '54%', '30%', { labelAbove: true });
+html += sceneSprite('shopCounter', 'Прилавок', '54%', '13%');
+return html;
+}
+
+function buildVillageTrapYardScene() {
+const disarmed = Boolean(state.tokmachka?.trapDisarmed);
+let html = '';
+html += sceneSprite('trap', disarmed ? 'Капкан (обезврежен)' : 'Капкан', '74%', '15%', { disarmed });
+return html;
+}
+
+function buildVillageBabaYardScene() {
+let html = '';
+html += sceneSprite('signBoard', '', '46%', '16%', { text: 'РЕСПЕКТ' });
+return html;
+}
+
+// Двор дома с псом: будка всегда на месте, а пес исчезает, как только вы его
+// приручили (state.dogTamed) — ведь после этого он уходит жить в бункер.
+function buildVillageDogYardScene() {
+let html = '';
+html += sceneSprite('doghouse', 'Будка', '42%', '15%');
+if (!state.dogTamed) html += sceneEmoji('🐕', 'Пёс на цепи', '58%', '16%', { size: 34 });
+return html;
+}
+
+function buildVillageGrannyRoomScene() {
+let html = '';
+html += sceneSprite('chest', 'Сундук', '26%', '15%');
+html += sceneSprite('table', 'Стол', '60%', '15%', { dim: true });
+html += sceneEmoji('🕯️', '', '60%', '36%', { size: 16, hideLabel: true });
+return html;
+}
+
+function buildVillageBabaRoomScene() {
+let html = '';
+html += sceneSprite('chest', 'Сундук', '14%', '15%', { dim: true });
+html += sceneSprite('table', 'Стол', '46%', '15%');
+html += sceneEmoji('🫖', 'Самовар', '46%', '36%', { size: 26 });
+html += sceneEmoji('🍞', 'Хлеб', '70%', '16%', { size: 26 });
+return html;
+}
+
+function buildVillageEmptyRoomScene() {
+let html = '';
+html += sceneSprite('table', 'Стол', '40%', '15%', { dim: true });
+html += sceneEmoji('🪑', 'Сломанный стул', '62%', '16%', { size: 30, dim: true });
+html += sceneEmoji('🕸️', '', '24%', '46%', { size: 22, hideLabel: true, dim: true });
+return html;
+}
+
+function buildVillageClinicScene() {
+let html = '';
+html += sceneSprite('cabinet', 'Шкаф с лекарствами', '24%', '15%');
+html += sceneSprite('table', 'Кушетка', '62%', '15%');
+html += sceneEmoji('💊', '', '24%', '54%', { size: 18, hideLabel: true, dim: true });
+return html;
+}
+
+function buildVillagePumpScene() {
+let html = '';
+html += sceneSprite('pump', 'Колонка', '60%', '14%');
+html += sceneEmoji('🪣', 'Ведро', '42%', '14%', { size: 30 });
+html += sceneEmoji('💧', '', '60%', '52%', { size: 16, hideLabel: true });
+return html;
+}
+
+function renderVillageScene(room) {
+const scene = document.getElementById('village-scene');
+if (!scene) return;
+const key = room.scene || 'empty';
+scene.className = `bunker-scene room-${key}`;
+scene.innerHTML = sceneBackground(room.bg || key) + `<div class="scene-vignette"></div>` + buildVillageRoomScene(key);
+}
+
+function renderVillageRooms() {
+const panel = document.getElementById('village-rooms');
+if (!panel) return;
+const tabs = document.getElementById('village-room-tabs');
+const desc = document.getElementById('village-room-desc');
+const building = getCurrentVillageBuilding();
+if (!building || !tabs) { panel.classList.add('hidden'); return; }
+// Пока показываем только комнаты с собственной сценой (готовым визуалом).
+const rooms = building.rooms.filter(room => room.scene);
+if (!rooms.length) { panel.classList.add('hidden'); return; }
+if (!rooms.some(room => room.id === state.villageRoom)) state.villageRoom = rooms[0].id;
+panel.classList.remove('hidden');
+tabs.className = rooms.length > 1 ? 'grid grid-cols-3 gap-2' : 'grid grid-cols-1 gap-2';
+tabs.innerHTML = rooms.map(room => {
+const active = room.id === state.villageRoom;
+return `<button type="button" onclick="setVillageRoom('${room.id}')" class="bunker-tab${active ? ' active' : ''}"><span>${room.label}</span></button>`;
+}).join('');
+const current = rooms.find(room => room.id === state.villageRoom) || rooms[0];
+if (desc) desc.innerHTML = `<span class="desc-title" style="color:#fbbf24">${building.label}</span> — ${current.desc}`;
+renderVillageScene(current);
+}
+
 function updateUI() {
 
 ensureTimeState();
@@ -3369,6 +3796,7 @@ if (roomsPanel) {
 roomsPanel.classList.toggle('hidden', !isInBunker);
 if (isInBunker) renderBunkerRooms();
 }
+renderVillageRooms();
 
 const radioBtn = document.getElementById('radio-button');
 if (radioBtn) radioBtn.classList.toggle('hidden', !(isInBunker && bunkerRoom === 'main' && state.radioFound));
@@ -3509,6 +3937,8 @@ searchButton.classList.remove('opacity-50', 'cursor-not-allowed');
 }
 let currentRoadLocation = getCurrentRoadLocation();
 document.getElementById('road-shop-button').classList.toggle('hidden', !currentRoadLocation || !currentRoadLocation.shopAvailable);
+const villageNavBtn = document.getElementById('village-nav-button');
+if (villageNavBtn) villageNavBtn.classList.toggle('hidden', !isVillageAreaId(currentLocationId));
 
 
 
@@ -3992,9 +4422,11 @@ updateUI();
 
 function openConsumeModal(type) {
 
-let foodItem = state.activeLoadout.find(i => i.type === 'Еда') || state.bunkerStorage.find(i => i.type === 'Еда');
+const consumeAreas = getAccessibleAreas();
 
-let waterItem = state.activeLoadout.find(i => i.type === 'Вода') || state.bunkerStorage.find(i => i.type === 'Вода');
+let foodItem = consumeAreas.reduce((found, list) => found || list.find(i => i.type === 'Еда'), null);
+
+let waterItem = consumeAreas.reduce((found, list) => found || list.find(i => i.type === 'Вода'), null);
 
 
 
@@ -4121,15 +4553,16 @@ addLog('Вы подождали 15 минут. Потребности расхо
 updateUI();
 }
 
+// Консервы, которые реально в руках. Вне бункера склад недоступен (см. getAccessibleAreas),
+// поэтому поделиться едой с семьёй можно только взяв консервы с собой.
 function getAvailableCans() {
-return [...state.activeLoadout, ...state.bunkerStorage]
-.filter(item => item.name === 'Консервы' && item.count > 0)
-.reduce((sum, item) => sum + item.count, 0);
+return getAccessibleAreas()
+.reduce((sum, list) => sum + list.filter(item => item.name === 'Консервы' && item.count > 0).reduce((acc, item) => acc + item.count, 0), 0);
 }
 
 function consumeCans(amount) {
 let remaining = amount;
-for (let items of [state.activeLoadout, state.bunkerStorage]) {
+for (let items of getAccessibleAreas()) {
 for (let index = items.length - 1; index >= 0 && remaining > 0; index--) {
 let item = items[index];
 if (item.name !== 'Консервы' || item.count <= 0) continue;
@@ -4173,9 +4606,14 @@ const COOK_RECIPES = [
 { input: 'Сырое мясо', output: 'Варёное мясо', outputDesc: 'Варёное мясо. Сытная еда.', verb: 'Сварить', prep: 'в кастрюле', vessel: 'Кастрюля', duration: 40 }
 ];
 
-// В бункере готовим со склада и из рюкзака; вне бункера — только из рюкзака (что несёшь с собой).
-function getCookingAreas() {
+// Где вообще доступны предметы: в бункере — склад и рюкзак; вне бункера — только рюкзак (что несёшь с собой).
+function getAccessibleAreas() {
 return state.location === 'Бункер (Убежище)' ? [state.activeLoadout, state.bunkerStorage] : [state.activeLoadout];
+}
+
+// В бункере готовим со склада и из рюкзака; вне бункера — только из рюкзака.
+function getCookingAreas() {
+return getAccessibleAreas();
 }
 
 function countCookItem(name) {
@@ -5129,29 +5567,9 @@ roadNotice = result.found
 ? `<div class="rounded-lg border border-emerald-700/70 bg-emerald-950/50 p-3 text-sm"><div class="font-semibold text-emerald-300">Новая локация на карте</div><div class="mt-1 text-slate-200"><b>${result.locationName}</b></div><div class="mt-1 text-xs text-slate-300">${result.description}</div><div class="mt-1 text-xs text-cyan-300">Исследование: ${result.searchMinutes} мин. · Путь: около ${result.routeMinutes} мин. Вы остались на текущей локации.</div></div>`
 : `<div class="rounded-lg border border-rose-700/70 bg-rose-950/50 p-3 text-sm"><div class="font-semibold text-rose-300">Новая дорога не найдена</div><div class="mt-1 text-xs text-slate-300">${result.description}</div><div class="mt-1 text-xs text-amber-300">Потрачено времени: ${result.searchMinutes} мин.</div></div>`;
 }
-const sortedNodes = [...nodes].sort((a, b) => {
-if (a.id === currentLocationId) return -1;
-if (b.id === currentLocationId) return 1;
-return (getHubTravelMinutes(a.id) ?? Infinity) - (getHubTravelMinutes(b.id) ?? Infinity);
-});
-const listView = sortedNodes.map(node => {
-const hidden = node.id === TOPAR_ID && !state.hasPaperMap;
-const routeMinutes = getRouteMinutes(currentLocationId, node.id);
-const hubMinutes = getHubTravelMinutes(node.id);
-const canTravel = !hidden && node.id !== currentLocationId && routeMinutes;
-const title = hidden ? '???' : node.shortName;
-const status = hidden ? 'Туман войны' : (node.id === currentLocationId ? 'Вы здесь' : node.generated ? (node.roadside ? 'Обочина' : 'Исследовано') : getMapStatus(node.id));
-const color = nodeColorMap[node.color] || '#0ea5e1';
-const vehicleTag = !hidden && node.vehicleBadge ? ` · 🚗 ${node.vehicleBadge}` : '';
-const distance = hidden ? '' : ` · ${hubMinutes === null ? 'нет пути от бункера' : `${formatTravelMinutes(hubMinutes)} от бункера`}`;
-const travelPreview = getMapTravelPreview(currentLocationId, node.id);
-const previewLine = (!hidden && canTravel && travelPreview) ? `<span class="text-xs ${travelPreview.ready ? 'text-emerald-300' : 'text-amber-300'}">${travelPreview.text}</span>` : '';
-const action = canTravel
-? `<button onclick="travelTo(${node.id})" class="w-full bg-blue-700 hover:bg-blue-600 text-white px-2 py-1.5 rounded text-xs font-semibold cursor-pointer">В путь · ${routeMinutes} мин</button>`
-: `<span class="text-xs ${hidden ? 'text-slate-500' : 'text-slate-400'}">${status}</span>`;
-return `<div class="map-node-list-item ${node.id === currentLocationId ? 'border-l-2 border-amber-400 pl-2' : ''}"><div class="flex items-center gap-2 min-w-0"><div class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${color}"></div><div class="flex flex-col min-w-0"><span class="font-medium text-slate-200 text-sm truncate">${title}</span><span class="text-xs text-slate-400">${status}${vehicleTag}${distance}</span>${previewLine}</div></div><div class="w-24 shrink-0">${action}</div></div>`;
-}).join('');
-const mapHtml = `<div class="grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)] gap-3 items-start"><div class="space-y-2 max-h-[64vh] overflow-y-auto pr-1 pb-3">${roadNotice}<div class="space-y-1">${listView}</div></div><div class="map-board map-viewport relative h-[46vh] min-h-[300px] max-h-[620px] rounded-lg border border-slate-700" id="map-viewport-1" style="cursor:grab;user-select:none"><div class="map-content" id="map-content-1" style="position:relative;width:${bounds.width}px;height:${bounds.height}px">${svg}${nodesHtml}</div><div class="map-zoom-controls"><button type="button" onclick="mapZoom(1)" class="map-zoom-btn" title="Приблизить" aria-label="Приблизить">+</button><button type="button" onclick="mapZoom(-1)" class="map-zoom-btn" title="Отдалить" aria-label="Отдалить">−</button><button type="button" onclick="focusCurrentMapLocation()" class="map-zoom-btn" title="К текущей локации" aria-label="К текущей локации">◎</button><button type="button" onclick="resetMapZoom()" class="map-zoom-btn" title="Показать всю карту" aria-label="Показать всю карту">⛶</button></div></div></div><div class="grid grid-cols-2 gap-2 text-[10px] text-slate-400"><span><span class="text-amber-300">━━</span> Основная дорога</span><span><span class="text-lime-300">━━</span> Известный путь</span><span><span class="text-slate-500">┅┅</span> Туман войны</span><span>Время указано для доступных переходов</span></div>`;
+// (список локаций удалён — карта отображает всё необходимое прямо на узлах)
+// Список локаций убран — карта самодостаточна: переходы и статусы показаны прямо на узлах.
+const mapHtml = `${roadNotice}<div class="map-board map-viewport relative h-[52vh] min-h-[320px] max-h-[640px] rounded-lg border border-slate-700" id="map-viewport-1" style="cursor:grab;user-select:none"><div class="map-content" id="map-content-1" style="position:relative;width:${bounds.width}px;height:${bounds.height}px">${svg}${nodesHtml}</div><div class="map-zoom-controls"><button type="button" onclick="mapZoom(1)" class="map-zoom-btn" title="Приблизить" aria-label="Приблизить">+</button><button type="button" onclick="mapZoom(-1)" class="map-zoom-btn" title="Отдалить" aria-label="Отдалить">−</button><button type="button" onclick="focusCurrentMapLocation()" class="map-zoom-btn" title="К текущей локации" aria-label="К текущей локации">◎</button><button type="button" onclick="resetMapZoom()" class="map-zoom-btn" title="Показать всю карту" aria-label="Показать всю карту">⛶</button></div></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-400"><span><span class="text-amber-300">━━</span> Основная дорога</span><span><span class="text-lime-300">━━</span> Известный путь</span><span><span class="text-slate-500">┅┅</span> Туман войны</span><span>Время указано для доступных переходов</span></div>`;
 const footerButtons = [];
 const currentLocation = locationsData.find(location => location.id === currentLocationId);
 const canExploreHere = currentLocationId === TOKMACHKA_ID || currentLocationId === TOPAR_ID || (currentLocation?.generated && !currentLocation?.roadside);
@@ -5165,17 +5583,54 @@ setTimeout(() => initMapPanZoom('map-viewport-1', 'map-content-1', bounds, nodeL
 }
 
 
+// ── Пункты поселка Малой Токмачки: иконка, короткое имя, подсказка и статус ──
+// status() вычисляется на момент открытия окна и показывает, что в этом месте доступно.
+const VILLAGE_POINTS = {
+4: { icon: '🪤', label: 'Дом 1 · Капкан', note: 'Жилище вредной бабки. У ворот лежит капкан!', status: () => state.tokmachka?.trapDisarmed ? { text: 'Капкан обезврежен', tone: 'ok' } : { text: 'Внимание: капкан', tone: 'warn' } },
+5: { icon: '🍞', label: 'Дом 2 · Баба Баджа', note: 'Гостеприимная хозяйка. На воротах надпись «РЕСПЕКТ».', status: () => state.tokmachka?.babaGiftDay === state.day ? { text: 'Сегодня уже угощала', tone: 'muted' } : { text: 'Можно за угощением', tone: 'ok' } },
+6: { icon: '🐕', label: 'Дом 3 · Пёс', note: 'Пустой дом с разбитым окном. На цепи скулит пёс.', status: () => state.dogTamed ? { text: 'Пёс уже в бункере', tone: 'muted' } : { text: 'Пса можно приручить', tone: 'warn' } },
+9: { icon: '🛒', label: 'Магазин', note: 'Припасы на прилавке и свежие поручения каждый день.', status: () => ({ text: 'Торговая точка', tone: 'ok' }) },
+10: { icon: '⚕️', label: 'Фельдшерский пункт', note: 'Медицинский кабинет: помощь и обмен за жетоны.', status: () => state.tokmachka?.clinicUsedDay === state.day ? { text: 'Сегодня уже были', tone: 'muted' } : { text: 'Доступна помощь', tone: 'ok' } },
+11: { icon: '🚰', label: 'Водоразборная колонка', note: 'Наберите воду — раз в день, без фильтра может быть мутной.', status: () => state.tokmachka?.waterDrawDay === state.day ? { text: 'Вода набрана сегодня', tone: 'muted' } : { text: 'Можно набрать воду', tone: 'ok' } }
+};
+
 function openVillageNavigationModal() {
-let listHtml = '<div class="space-y-2 max-h-64 overflow-y-auto pr-1">';
-locationsData.filter(loc => loc.villageHouse || loc.villageShop).forEach(loc => {
-listHtml += `
-<div class="bg-slate-950 border border-slate-800 p-3 rounded-lg flex items-center justify-between gap-2 hover:border-slate-600 transition">
-<div><div class="font-semibold text-slate-200 text-sm">${loc.name}</div><div class="text-xs text-slate-400">${loc.desc}</div></div>
-<button onclick="travelTo(${loc.id})" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap cursor-pointer">Войти</button>
-</div>`;
-});
-listHtml += '</div>';
-showModal("Малая Токмачка: выбор дома", listHtml, [{ text: "Остаться в поселке", className: "bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer" }]);
+ensureExplorationState();
+const hereId = getCurrentLocationId();
+const atCenter = hereId === TOKMACHKA_ID;
+const points = locationsData.filter(loc => loc.villageHouse || loc.villageShop);
+const cards = points.map(loc => {
+const meta = VILLAGE_POINTS[loc.id] || {};
+const isHere = loc.id === hereId;
+const minutes = getRouteMinutes(hereId, loc.id);
+const st = typeof meta.status === 'function' ? meta.status() : null;
+const statusHtml = st ? `<span class="village-card-status ${st.tone || ''}">${st.text}</span>` : '';
+const timeHtml = (!isHere && minutes) ? `<span class="village-card-status muted">🚶 ${minutes} мин</span>` : '';
+const action = isHere
+? `<span class="village-card-go village-card-go-here">Вы здесь</span>`
+: `<span class="village-card-go">Зайти</span>`;
+const attrs = isHere ? 'disabled' : `onclick="travelTo(${loc.id})"`;
+return `<button type="button" ${attrs} class="village-card${isHere ? ' village-card-here' : ''}">
+<span class="village-card-ico">${meta.icon || '📍'}</span>
+<span class="village-card-body">
+<span class="village-card-name">${meta.label || loc.name}</span>
+<span class="village-card-note">${meta.note || loc.desc}</span>
+<span class="flex items-center gap-2 flex-wrap">${statusHtml}${timeHtml}</span>
+</span>
+${action}
+</button>`;
+}).join('');
+const intro = atCenter
+? 'Посёлок с тремя домами и службами. Выберите, куда зайти — переход по посёлку пешком занимает пару минут.'
+: 'Вы на территории посёлка. Загляните в другой дом или вернитесь на площадь — переход пешком занимает пару минут.';
+const html = `<div class="text-xs text-slate-400 mb-2.5">${intro}</div><div class="village-nav-grid">${cards}</div>`;
+const footerButtons = atCenter
+? [{ text: 'Остаться в поселке', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]
+: [
+{ text: 'На площадь поселка', className: 'bg-amber-800 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => travelTo(TOKMACHKA_ID) },
+{ text: 'Остаться здесь', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
+];
+showModal('Малая Токмачка · куда зайти?', html, footerButtons);
 }
 
 
@@ -6128,12 +6583,12 @@ let familyQuote = isSupportedFamily
 let shareButton = !isSupportedFamily && canShare
 ? { text: 'Поделиться 2 консервами', className: 'bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: feedLoneHouseFamily }
  : !isSupportedFamily
- ? { text: 'Нужны 2 консервы', className: 'bg-slate-700 text-slate-400 px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
+ ? { text: 'Нужны 2 консервы с собой', className: 'bg-slate-700 text-slate-400 px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
  : { text: 'Припасов пока нет', className: 'bg-slate-700 text-slate-400 px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' };
 let leaveButton = family.foodDeadlineDay === null
 ? { text: 'Уйти', className: 'bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: postponeLoneHouseHelp }
 : { text: 'Уйти', className: 'bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' };
-showModal('Семья в одиноком доме', `<p>Внутри живет мирная семья. Они говорят:</p><p class="mt-2 text-amber-300 italic">${familyQuote}</p><p class="mt-2 text-xs text-slate-400">${statusText}</p>${isSupportedFamily ? '' : '<p class="mt-2 text-xs text-slate-400">Чтобы помочь, нужны две консервы.</p>'}`, [
+showModal('Семья в одиноком доме', `<p>Внутри живет мирная семья. Они говорят:</p><p class="mt-2 text-amber-300 italic">${familyQuote}</p><p class="mt-2 text-xs text-slate-400">${statusText}</p>${isSupportedFamily ? '' : '<p class="mt-2 text-xs text-slate-400">Чтобы помочь, нужно взять с собой 2 консервы (склад бункера отсюда недоступен).</p>'}`, [
 shareButton,
 { text: 'Напасть', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: attackLoneHouseFamily },
 leaveButton
@@ -6548,7 +7003,7 @@ updateUI();
 
 function tameDog() {
 
-let foodItem = state.activeLoadout.find(i => i.type === 'Еда') || state.bunkerStorage.find(i => i.type === 'Еда');
+let foodItem = getAccessibleAreas().reduce((found, list) => found || list.find(i => i.type === 'Еда'), null);
 
 if (foodItem && foodItem.count >= 0.5) {
 
