@@ -89,6 +89,15 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 .map-node .map-label { text-shadow: 0 1px 4px #020617, 0 0 8px #020617; }
 .map-route-label { fill: #cbd5e1; font-size: 13px; paint-order: stroke; stroke: #0b1717; stroke-width: 5px; stroke-linejoin: round; }
 .map-region-label { color: rgba(203, 213, 225, .24); font: 700 22px 'JetBrains Mono', monospace; letter-spacing: 0; text-transform: uppercase; pointer-events: none; }
+.main-menu-shell { position: relative; overflow: hidden; background-image: linear-gradient(90deg, rgba(2, 6, 23, .84) 0%, rgba(2, 6, 23, .46) 48%, rgba(2, 6, 23, .34) 100%), url('background-mobile.png.jpg'); background-size: cover; background-position: center; }
+.main-menu-shell::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background-image: linear-gradient(rgba(148, 163, 184, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, .05) 1px, transparent 1px); background-size: 28px 28px; mask-image: linear-gradient(to bottom, #000, transparent 90%); }
+@media (min-width: 768px) { .main-menu-shell { background-image: linear-gradient(90deg, rgba(2, 6, 23, .84) 0%, rgba(2, 6, 23, .42) 48%, rgba(2, 6, 23, .28) 100%), url('background-pc.png.jpg'); } }
+.menu-content { position: relative; z-index: 1; }
+.menu-choice { min-height: 142px; text-align: left; border: 1px solid #26313d; background: linear-gradient(145deg, rgba(20, 29, 38, .96), rgba(7, 11, 16, .96)); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.menu-choice:hover { transform: translateY(-3px); border-color: #f59e0b; box-shadow: 0 12px 28px rgba(0, 0, 0, .35), 0 0 18px rgba(245, 158, 11, .12); }
+.menu-choice-survival:hover { border-color: #38bdf8; box-shadow: 0 12px 28px rgba(0, 0, 0, .35), 0 0 18px rgba(56, 189, 248, .12); }
+.menu-slot { border: 1px solid #26313d; background: rgba(15, 23, 42, .72); }
+.menu-slot:hover { border-color: #64748b; }
 /* ===== Выбор места в поселке (карточки-«двери») ===== */
 .village-nav-grid { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 64vh; overflow-y: auto; padding: 2px 4px 4px 2px; }
 @media (min-width: 640px) { .village-nav-grid { grid-template-columns: 1fr 1fr; } }
@@ -235,26 +244,92 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
   font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.55; color: #94a3b8;
 }
 #bunker-room-desc .desc-title { font-weight: 700; }
+/* ===== АДАПТИВ: ПК-сетка + мобильные табы (Бункер: Топар) ===== */
+.mobile-only { display: none; }
+.tab-content { display: contents; }
+.tab-pane-inner { display: contents; }
+.adaptive-emptied { display: none !important; }
+.mobile-top-bar, .mobile-bottom-nav, .mobile-log-fab { display: none; }
+#mobile-log-overlay { display: none; }
+#embedded-map { display: block; }
+#location-info-card { display: block; }
+.m-tab-title { display: none; }
+@media (min-width: 768px) {
+  .mobile-only { display: none !important; }
+  .mobile-top-bar, .mobile-bottom-nav, .mobile-log-fab, #mobile-log-overlay { display: none !important; }
+  .tab-content { display: contents !important; }
+  .tab-pane-inner { display: contents !important; }
+  #embedded-map { display: none !important; }
+  #location-info-card { display: none !important; }
+  .m-tab-title { display: none !important; }
+  .m-log-toggle { display: none !important; }
+  #game-screen.m-collapsed { max-height: none !important; }
+  .main-game-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
+  body { padding-top: 0 !important; padding-bottom: 0 !important; }
+}
+@media (max-width: 767px) {
+  .mobile-only { display: flex !important; }
+  body { padding-top: 58px !important; padding-bottom: 72px !important; }
+  #app { border-radius: 0; border-left: none; border-right: none; max-width: 100%; }
+  #app > header { display: none !important; }
+  .main-game-layout { display: block !important; padding: 12px 12px 90px !important; max-width: 100%; }
+  .tab-content { display: none !important; }
+  .tab-content.active { display: block !important; }
+  .tab-pane-inner { display: flex; flex-direction: column; gap: 12px; }
+  .m-tab-title { display: flex !important; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: #fbbf24; padding: 2px 2px 0; }
+  .m-tab-title .sub { font-weight: 400; font-size: 11px; color: #64748b; }
+  #game-screen.m-collapsed { max-height: 120px !important; overflow: hidden !important; position: relative; }
+  #game-screen.m-collapsed::after { content: '···'; position: absolute; bottom: 4px; right: 10px; color: #64748b; font-size: 14px; }
+  .m-log-toggle { background: #0f172a; border: 1px solid #1e293b; color: #94a3b8; border-radius: 8px; font-size: 11px; padding: 6px 10px; cursor: pointer; width: 100%; }
+  .m-log-toggle:active { transform: scale(0.98); }
+  .mobile-top-bar { position: fixed; top: 0; left: 0; right: 0; min-height: 52px; background: #0f141d; border-bottom: 1px solid #1e293b; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; font-size: 12px; padding: 4px 8px; gap: 2px; }
+  .mobile-top-bar .loc-title { font-weight: 700; color: #fbbf24; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .mobile-top-bar .stats-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; color: #cbd5e1; font-size: 11px; }
+  .mobile-top-bar .stats-row b { color: #fff; }
+  .mobile-bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; min-height: 60px; background: #0f141d; border-top: 1px solid #1e293b; justify-content: space-around; align-items: stretch; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
+  .mobile-bottom-nav .nav-item { background: none; border: none; color: #64748b; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 11px; flex: 1; padding: 6px 0; min-height: 56px; cursor: pointer; gap: 2px; }
+  .mobile-bottom-nav .nav-item .icon { font-size: 20px; line-height: 1; }
+  .mobile-bottom-nav .nav-item .label { font-size: 11px; }
+  .mobile-bottom-nav .nav-item.active { color: #f97316; font-weight: bold; }
+  .mobile-log-fab { position: fixed; right: 12px; bottom: 74px; z-index: 999; width: 48px; height: 48px; border-radius: 50%; align-items: center; justify-content: center; background: #1e293b; border: 1px solid #334155; font-size: 20px; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.5); }
+  #mobile-log-overlay { position: fixed; inset: 0; z-index: 1100; background: rgba(2,6,23,.7); align-items: flex-end; justify-content: center; padding: 12px; }
+  #mobile-log-overlay.open { display: flex !important; }
+  #mobile-log-overlay .sheet { width: 100%; max-width: 560px; max-height: 78vh; overflow: hidden; background: #0f172a; border: 1px solid #334155; border-radius: 14px; display: flex; flex-direction: column; }
+  #mobile-log-overlay .sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid #1e293b; font-weight: 700; color: #fbbf24; }
+  #mobile-log-overlay .sheet-body { padding: 10px 12px; overflow-y: auto; }
+  .map-board { min-height: 52vh; }
+}
+
 </style>
 
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
 
-<div id="main-menu" class="w-full max-w-3xl bg-slate-950 border border-slate-800 rounded-xl shadow-2xl p-5 sm:p-8">
-
-<div class="flex items-center gap-3 mb-2">
+<div id="main-menu" class="main-menu-shell w-full max-w-4xl border border-slate-800 rounded-xl shadow-2xl p-5 sm:p-10">
+<div class="menu-content">
+<div id="menu-landing">
+<div class="flex items-center gap-3 mb-3">
 <span class="inline-block w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-<h1 class="text-xl sm:text-3xl font-bold tracking-wider text-amber-400 mono">БУНКЕР: ТОПАР</h1>
+<h1 class="text-xl sm:text-4xl font-bold tracking-wider text-amber-400 mono">БУНКЕР: ТОПАР</h1>
 </div>
-<p class="text-sm text-slate-400 mb-6">Выберите слот истории или начните новую вылазку.</p>
-
-<div class="mb-4 flex justify-end">
-<button onclick="openSaveImport()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer">Импорт сохранения</button>
+<p class="max-w-xl text-sm sm:text-base leading-relaxed text-slate-400 mb-8">После катастрофы осталось только одно безопасное место. Выберите путь, подготовьте запасы и переживите следующий день.</p>
+<button onclick="openPlayMenu()" class="w-full sm:w-auto bg-amber-600 hover:bg-amber-500 text-white px-10 py-4 rounded-lg text-base font-bold tracking-wide cursor-pointer shadow-lg shadow-amber-950/40">▶ Играть</button>
+</div>
+<div id="game-mode-menu" class="hidden">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+<div><div class="text-xs uppercase tracking-[.2em] text-slate-500 mono">Новая смена</div><h2 class="text-2xl sm:text-3xl font-bold text-slate-100 mt-1">Выберите режим</h2></div>
+<button onclick="closePlayMenu()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer">← Назад</button>
+</div>
+<div class="grid sm:grid-cols-2 gap-4 mb-6">
+<button onclick="showStoryMode()" class="menu-choice rounded-lg p-5 cursor-pointer"><div class="text-3xl mb-3">📖</div><div class="text-lg font-bold text-amber-300">Сюжетка</div><div class="text-xs text-slate-400 mt-2">Продолжите историю Дили и разберитесь, что скрывает Топар.</div></button>
+<button onclick="showSurvivalMode()" class="menu-choice menu-choice-survival rounded-lg p-5 cursor-pointer"><div class="text-3xl mb-3">⚠️</div><div class="text-lg font-bold text-sky-300">Выживание</div><div class="text-xs text-slate-400 mt-2">Начните собственную вылазку и продержитесь как можно дольше.</div></button>
+</div>
+<div id="save-slots" class="hidden"></div>
+<div class="flex justify-end mt-4"><button onclick="openSaveImport()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer">Импорт сохранения</button></div>
 <input id="save-import-file" type="file" accept="application/json,.json" class="hidden" onchange="importSaveFile(event)">
 </div>
-
-<div id="save-slots" class="grid gap-3"></div>
+</div>
 </div>
 
 
@@ -361,12 +436,38 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 
 
 
-<main class="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 sm:p-6 flex-grow bg-slate-900/50">
+<main class="main-game-layout grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 sm:p-6 flex-grow bg-slate-900/50" id="main-game-layout">
+<div id="tab-location" class="tab-content active">
+<div class="tab-pane-inner" id="tab-bunker-inner">
+<div class="m-tab-title">📍 Текущая локация <span class="sub">база · помещения · действия</span></div>
+</div>
+<div class="tab-pane-inner" id="tab-location-inner">
+<div class="m-tab-title">📍 На месте <span class="sub">точка · действия · обыск</span></div>
+<div id="location-info-card" class="bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col gap-1">
+<div class="text-[10px] uppercase tracking-wide text-slate-500">📍 Текущая локация</div>
+<div id="location-info-name" class="font-bold text-cyan-300 text-sm">Бункер (Убежище)</div>
+<div id="location-info-desc" class="text-xs text-slate-400"></div>
+</div>
+</div></div>
+<div id="tab-map" class="tab-content"><div class="tab-pane-inner" id="tab-map-inner">
+<div class="m-tab-title">🗺️ Карта <span class="sub">граф · переходы · разведка</span></div>
+<div id="embedded-map" class="bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col gap-2">
+<div class="flex items-center justify-between gap-2">
+<h3 class="font-bold text-amber-400 text-sm">🗺️ Карта маршрутов</h3>
+<span id="embedded-map-loc" class="text-[11px] text-cyan-300"></span>
+</div>
+<div id="embedded-map-body"><p class="text-xs text-slate-500">Карта загружается…</p></div>
+</div>
+</div></div>
+<div id="tab-inventory" class="tab-content"><div class="tab-pane-inner" id="tab-inventory-inner">
+<div class="m-tab-title">🎒 Снаряжение <span class="sub">набор · склад · слоты</span></div>
+</div></div>
+
 
 
 <!-- Center: Game Console & Primary Actions -->
 
-<div class="lg:col-span-2 flex flex-col gap-4">
+<div class="lg:col-span-2 flex flex-col gap-4" id="pc-center-col">
 
 
 <!-- Terminal Screen -->
@@ -393,6 +494,14 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 <div id="bunker-room-tabs" class="grid grid-cols-3 gap-2"></div>
 <div id="bunker-scene" class="bunker-scene room-main mt-3"></div>
 <div id="bunker-room-desc" class="text-[10px] text-slate-500 mt-2"></div>
+<div id="kitchen-cooking-panel" class="hidden mt-3 border border-orange-800/60 bg-orange-950/20 rounded-lg p-3">
+<div class="flex items-center justify-between gap-2 mb-2">
+<div class="text-xs font-bold text-orange-200">🍳 Вкладка готовки</div>
+<span id="kitchen-cooking-status" class="text-[10px] text-slate-400"></span>
+</div>
+<div class="text-[11px] text-slate-400 mb-2">Выберите рецепт и приготовьте сырую рыбу или мясо. Нужны продукт, дрова и подходящая посуда.</div>
+<button id="kitchen-cooking-button" type="button" onclick="openCookingModal()" class="w-full bg-orange-700 hover:bg-orange-600 disabled:bg-slate-800 disabled:text-slate-500 border border-orange-600 disabled:border-slate-700 text-white py-2 px-3 rounded-lg text-xs font-semibold cursor-pointer">Открыть рецепты</button>
+</div>
 </div>
 
 <!-- Village building rooms (поселок) -->
@@ -402,22 +511,15 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 <div id="village-scene" class="bunker-scene mt-3"></div>
 <div id="village-room-desc" class="text-[10px] text-slate-500 mt-2"></div>
 </div>
+<div id="location-scene-panel" class="hidden bg-slate-900 border border-slate-800 rounded-lg p-3">
+<div class="text-[10px] uppercase tracking-wide text-slate-500 mb-2"><span class="bunker-panel-title">◈ Обстановка на месте</span></div>
+<div id="location-scene" class="bunker-scene mt-3"></div>
+<div id="location-scene-desc" class="text-[10px] text-slate-500 mt-2"></div>
+</div>
 
 <!-- Quick Consumption Buttons -->
 
 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-
-<button onclick="openConsumeModal('food')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
-
-🍲 Поесть консервы
-
-</button>
-
-<button onclick="openConsumeModal('water')" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
-
-💧 Выпить воду
-
-</button>
 
 <button id="crafting-button" onclick="openCraftingModal()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
 
@@ -446,6 +548,18 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 <button id="rest-button" onclick="restInBunker()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
 
 🛌 Отдохнуть · 1 час
+
+</button>
+
+<button id="eat-button" onclick="openConsumeModal('food')" class="hidden bg-emerald-900/70 hover:bg-emerald-800 active:scale-95 border border-emerald-700 text-emerald-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+
+🍖 Быстро поесть
+
+</button>
+
+<button id="drink-button" onclick="openConsumeModal('water')" class="hidden bg-cyan-900/70 hover:bg-cyan-800 active:scale-95 border border-cyan-700 text-cyan-200 py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+
+💧 Быстро выпить
 
 </button>
 
@@ -548,7 +662,7 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 
 <!-- Right Column: Dual Inventories -->
 
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-4" id="pc-right-col">
 
 <div class="flex items-center gap-2">
 <label for="inventory-filter" class="sr-only">Фильтр инвентаря</label>
@@ -633,47 +747,18 @@ body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fa
 
 
 
-<!-- Floating Collapsible Notes Widget (Bottom Right Corner) -->
-
-<div id="notes-widget" class="absolute bottom-4 right-4 z-40 flex flex-col items-end">
-
-<!-- Notes Drawer Body -->
-
-<div id="notes-drawer" class="bg-slate-950 border border-slate-800 rounded-xl shadow-2xl w-80 sm:w-96 p-4 mb-2 hidden flex-col gap-3 transition-all duration-300">
-
-<div class="flex items-center justify-between border-b border-slate-800 pb-2">
-
-<h3 class="text-sm font-bold text-amber-400 flex items-center gap-2">
-
-📝 Заметки выжившего
-
-</h3>
-
-<button onclick="toggleNotes()" class="text-slate-400 hover:text-slate-200 text-xs cursor-pointer">✕</button>
-
+<!-- ===== Mobile chrome: top status bar + bottom tabs + log overlay ===== -->
+<div class="mobile-top-bar mobile-only">
+<div class="loc-title" id="mobile-loc-display">Бункер (Убежище)</div>
+<div class="stats-row"><span>❤️ <b id="mob-hp">100%</b></span><span>🍖 <b id="mob-food">100%</b></span><span>💧 <b id="mob-water">100%</b></span><span>😮‍💨 <b id="mob-fatigue">0%</b></span><span>📅 День <b id="mob-day">1</b></span><span>🕒 <b id="mob-time">06:00</b></span></div>
 </div>
-
-<textarea id="notes-input" oninput="saveNotes()" class="w-full h-36 bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/50 resize-none mono" placeholder="Записывайте сюда планы, координаты, коды от сейфов или напоминания..."></textarea>
-
-<div class="text-[10px] text-slate-500 text-right">Сохраняется автоматически</div>
-
-</div>
-
-
-
-<!-- Toggle Button -->
-
-<button onclick="toggleNotes()" class="bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-700/80 px-4 py-2.5 rounded-full shadow-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition transform active:scale-95">
-
-<span>📝 Заметки</span>
-
-<span id="notes-indicator" class="w-2 h-2 rounded-full bg-emerald-500"></span>
-
-</button>
-
-</div>
-
-
+<button class="mobile-log-fab mobile-only" id="mobile-log-fab" onclick="toggleMobileLog(true)" aria-label="Открыть журнал">📜</button>
+<div id="mobile-log-overlay"><div class="sheet"><div class="sheet-head"><span>📜 Журнал событий</span><button onclick="toggleMobileLog(false)" class="bg-slate-800 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">✕ Закрыть</button></div><div class="sheet-body mono text-sm flex flex-col gap-3" id="mobile-log-body"></div></div></div>
+<nav class="mobile-bottom-nav mobile-only">
+<button class="nav-item active" onclick="switchTab('tab-location', this)"><span class="icon">📍</span><span class="label">Текущая локация</span></button>
+<button class="nav-item" onclick="switchTab('tab-map', this)"><span class="icon">🗺️</span><span class="label">Карта</span></button>
+<button class="nav-item" onclick="switchTab('tab-inventory', this)"><span class="icon">🎒</span><span class="label">Рюкзак</span></button>
+</nav>
 
 </div>
 
@@ -767,6 +852,7 @@ lastSuppliesDay: null
 },
 
 activeQuest: null,
+activeQuests: [],
 
 pinnedQuestId: null,
 
@@ -785,13 +871,12 @@ dailyTradeStock: null,
 tradeCredits: 0,
 tokmachka: { trapDisarmed: false, trapLootClaimed: false, babaGiftDay: 0, clinicUsedDay: 0, waterDrawDay: 0 },
 
-lastRoadExploration: null,
-
-notesText: localStorage.getItem('bunker_notes') || "Планы на выживание:\n1. Починить радио и поймать сигнал.\n2. Найти металлолом для верстака.\n3. Остерегаться капканов у дома вредной бабки."
+lastRoadExploration: null
 
 };
 
 const SAVE_STORAGE_KEY = 'bunker_save_slots';
+const SAVE_DEFAULT_SEEDED_KEY = 'bunker_default_story_seeded';
 const SAVE_FORMAT = 'bunker-topar-save';
 const SAVE_SCHEMA_VERSION = 2;
 const SURVIVAL_RECORD_KEY = 'bunker_topar_survival_record';
@@ -812,6 +897,21 @@ return record;
 
 function cloneState(source) {
 return JSON.parse(JSON.stringify(source));
+}
+
+function normalizeImportedState(source) {
+let normalized = cloneState(initialStoryState);
+let imported = cloneState(source);
+Object.assign(normalized, imported);
+['bunkerUpgrades', 'loneHouseFamily', 'tokmachka'].forEach(key => {
+if (imported[key] && typeof imported[key] === 'object' && !Array.isArray(imported[key])) {
+normalized[key] = { ...normalized[key], ...imported[key] };
+}
+});
+if (!Array.isArray(normalized.activeLoadout)) normalized.activeLoadout = [];
+if (!Array.isArray(normalized.bunkerStorage)) normalized.bunkerStorage = [];
+if (!Array.isArray(normalized.generatedLocations)) normalized.generatedLocations = [];
+return normalized;
 }
 
 function getSaveSlots() {
@@ -867,11 +967,8 @@ if (!importedSlot || typeof importedSlot !== 'object' || !importedSlot.state || 
 throw new Error('В файле не найдено состояние игры.');
 }
 if (!Number.isInteger(slotIndex) || slotIndex < 0 || slotIndex >= 4) throw new Error('Неверный номер слота.');
-let importedState = cloneState(importedSlot.state);
+let importedState = normalizeImportedState(importedSlot.state);
 if (!Number.isFinite(importedState.day) || importedState.day < 1) throw new Error('Сохранение содержит некорректный номер дня.');
-if (!Array.isArray(importedState.activeLoadout)) importedState.activeLoadout = [];
-if (!Array.isArray(importedState.bunkerStorage)) importedState.bunkerStorage = [];
-if (!Array.isArray(importedState.generatedLocations)) importedState.generatedLocations = [];
 let slots = getSaveSlots();
 slots[slotIndex] = {
 schemaVersion: SAVE_SCHEMA_VERSION,
@@ -914,7 +1011,7 @@ reader.readAsText(file);
 
 function initializeSaveSystem() {
 let slots = getSaveSlots();
-if (!slots.some(Boolean)) {
+if (!slots.some(Boolean) && localStorage.getItem(SAVE_DEFAULT_SEEDED_KEY) !== '1') {
 slots[0] = {
 schemaVersion: SAVE_SCHEMA_VERSION,
 state: initialStoryState,
@@ -922,6 +1019,7 @@ savedAt: 'Предустановленная история',
 storyName: 'История с 14-го дня'
 };
 setSaveSlots(slots);
+localStorage.setItem(SAVE_DEFAULT_SEEDED_KEY, '1');
 }
 renderSaveSlots();
 }
@@ -929,15 +1027,25 @@ renderSaveSlots();
 function renderSaveSlots() {
 let slots = getSaveSlots();
 let container = document.getElementById('save-slots');
+if (!container) return;
 container.innerHTML = '';
-
-slots.forEach((slot, index) => {
+let mode = container.dataset.mode || 'story';
+let indexes = mode === 'survival' ? [1, 2, 3] : [0];
+let title = document.createElement('div');
+title.className = 'text-xs uppercase tracking-[.2em] text-slate-500 mono mb-2';
+title.textContent = mode === 'survival' ? 'Слоты выживания' : 'Слот истории';
+container.appendChild(title);
+let list = document.createElement('div');
+list.className = 'grid gap-3';
+container.appendChild(list);
+indexes.forEach(index => {
+let slot = slots[index];
 let row = document.createElement('div');
-row.className = 'bg-slate-900 border border-slate-800 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3';
+row.className = 'menu-slot rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3';
 
 let details = slot
-? `<div><div class="font-bold text-slate-200">Слот ${index + 1}: ${slot.storyName}</div><div class="text-xs text-slate-400 mt-1">День ${slot.state.day} · ${slot.savedAt}</div></div>`
-: `<div><div class="font-bold text-slate-400">Слот ${index + 1}: пусто</div><div class="text-xs text-slate-500 mt-1">Бесконечное выживание · сюжет необязателен</div></div>`;
+? `<div><div class="font-bold text-slate-200">${mode === 'story' ? 'Сюжетная линия' : `Выживание · слот ${index}`}</div><div class="text-xs text-slate-400 mt-1">День ${slot.state.day} · ${slot.savedAt}</div></div>`
+: `<div><div class="font-bold text-slate-400">${mode === 'story' ? 'История не начата' : `Слот выживания ${index}: пусто`}</div><div class="text-xs text-slate-500 mt-1">${mode === 'story' ? 'Готовая сюжетная завязка' : 'Новая попытка · личный рекорд сохраняется отдельно'}</div></div>`;
 
 row.innerHTML = details;
 let actions = document.createElement('div');
@@ -947,7 +1055,7 @@ let button = document.createElement('button');
 button.className = slot
 ? 'bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer'
 : 'bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold cursor-pointer';
-button.innerText = slot ? 'Загрузить' : 'Начать выживание';
+button.innerText = slot ? 'Продолжить' : (mode === 'story' ? 'Начать сюжет' : 'Новое выживание');
 button.onclick = () => slot ? loadGameSlot(index) : startNewGame(index);
 actions.appendChild(button);
 
@@ -967,8 +1075,33 @@ actions.appendChild(deleteButton);
 }
 
 row.appendChild(actions);
-container.appendChild(row);
+list.appendChild(row);
 });
+}
+
+function openPlayMenu() {
+document.getElementById('menu-landing').classList.add('hidden');
+document.getElementById('game-mode-menu').classList.remove('hidden');
+showStoryMode();
+}
+
+function closePlayMenu() {
+document.getElementById('game-mode-menu').classList.add('hidden');
+document.getElementById('menu-landing').classList.remove('hidden');
+}
+
+function showStoryMode() {
+let container = document.getElementById('save-slots');
+container.dataset.mode = 'story';
+container.classList.remove('hidden');
+renderSaveSlots();
+}
+
+function showSurvivalMode() {
+let container = document.getElementById('save-slots');
+container.dataset.mode = 'survival';
+container.classList.remove('hidden');
+renderSaveSlots();
 }
 
 function openGame(nextState, slotIndex) {
@@ -1040,7 +1173,6 @@ newState.searchedLocations = {};
 newState.forestHouseEnemiesRemaining = 3;
 newState.forestHouseCleared = false;
 newState.loneHouseFamily = { status: 'alive', foodDeadlineDay: null, lastSuppliesDay: null };
-newState.notesText = 'Планы на выживание:';
 openGame(newState, slotIndex);
 saveCurrentGame();
 }
@@ -1067,6 +1199,7 @@ function returnToMainMenu() {
 performSave();
 document.getElementById('app').classList.add('hidden');
 document.getElementById('main-menu').classList.remove('hidden');
+closePlayMenu();
 renderSaveSlots();
 }
 
@@ -1973,13 +2106,13 @@ return 'house';
 
 function getRandomRoadLocationTemplate(excludedNames = []) {
 let templates = [
-{ name: 'Старая водонапорная башня', desc: 'Ржавая башня возвышается над заросшей дорогой. Внизу виден технический люк.', lootKey: 'forest', vehicleChance: 0.18, vehicleTypes: ['bicycle', 'motorcycle'], searchProfile: { maxAttempts: 2, chance: 0.74, minMinutes: 35, maxMinutes: 55 } },
-{ name: 'Разбитая автозаправка', desc: 'Остов заправки скрывает складские помещения, остатки топлива и машины прежних клиентов.', lootKey: 'house', kind: 'gasStation', fuelStockMin: 8, fuelStockMax: 56, vehicleChance: 0.42, vehicleTypes: ['motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 3, chance: 0.82, minMinutes: 35, maxMinutes: 55 } },
-{ name: 'Лесной кордон', desc: 'Заброшенный пост лесников с кострищем и следами недавней стоянки.', lootKey: 'forest', vehicleChance: 0.22, vehicleTypes: ['bicycle', 'motorcycle'], searchProfile: { maxAttempts: 2, chance: 0.78, minMinutes: 30, maxMinutes: 50 } },
-{ name: 'Старая автобусная остановка', desc: 'Под навесом лежат ржавые сиденья, обрывки газет и чья-то сумка.', lootKey: 'house', vehicleChance: 0.12, vehicleTypes: ['bicycle'], searchProfile: { maxAttempts: 2, chance: 0.66, minMinutes: 20, maxMinutes: 40 } },
-{ name: 'Затопленный карьер', desc: 'За бетонным забором темнеет вода, а на берегу остались следы лагеря.', lootKey: 'lake', vehicleChance: 0.18, vehicleTypes: ['motorcycle', 'car'], searchProfile: { maxAttempts: 3, chance: 0.82, minMinutes: 40, maxMinutes: 60 } },
-{ name: 'Заброшенный гараж', desc: 'В ремонтной яме стоит транспорт под брезентом. Инструменты и запчасти давно растащили.', lootKey: 'house', vehicleChance: 0.78, vehicleTypes: ['bicycle', 'motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 3, chance: 0.76, minMinutes: 35, maxMinutes: 60 } },
-{ name: 'Стоянка старого шоссе', desc: 'На обочине остались несколько машин; багажники закрыты, вокруг видны свежие следы.', lootKey: 'house', vehicleChance: 0.62, vehicleTypes: ['motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 2, chance: 0.72, minMinutes: 25, maxMinutes: 45 } }
+{ name: 'Старая водонапорная башня', sceneKey: 'waterTower', desc: 'Ржавая башня возвышается над заросшей дорогой. Внизу виден технический люк.', lootKey: 'forest', vehicleChance: 0.18, vehicleTypes: ['bicycle', 'motorcycle'], searchProfile: { maxAttempts: 2, chance: 0.74, minMinutes: 35, maxMinutes: 55 } },
+{ name: 'Разбитая автозаправка', sceneKey: 'gasStation', desc: 'Остов заправки скрывает складские помещения, остатки топлива и машины прежних клиентов.', lootKey: 'house', kind: 'gasStation', fuelStockMin: 8, fuelStockMax: 56, vehicleChance: 0.42, vehicleTypes: ['motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 3, chance: 0.82, minMinutes: 35, maxMinutes: 55 } },
+{ name: 'Лесной кордон', sceneKey: 'checkpoint', desc: 'Заброшенный пост лесников с кострищем и следами недавней стоянки.', lootKey: 'forest', vehicleChance: 0.22, vehicleTypes: ['bicycle', 'motorcycle'], searchProfile: { maxAttempts: 2, chance: 0.78, minMinutes: 30, maxMinutes: 50 } },
+{ name: 'Старая автобусная остановка', sceneKey: 'busStop', desc: 'Под навесом лежат ржавые сиденья, обрывки газет и чья-то сумка.', lootKey: 'house', vehicleChance: 0.12, vehicleTypes: ['bicycle'], searchProfile: { maxAttempts: 2, chance: 0.66, minMinutes: 20, maxMinutes: 40 } },
+{ name: 'Затопленный карьер', sceneKey: 'quarry', desc: 'За бетонным забором темнеет вода, а на берегу остались следы лагеря.', lootKey: 'lake', vehicleChance: 0.18, vehicleTypes: ['motorcycle', 'car'], searchProfile: { maxAttempts: 3, chance: 0.82, minMinutes: 40, maxMinutes: 60 } },
+{ name: 'Заброшенный гараж', sceneKey: 'garage', desc: 'В ремонтной яме стоит транспорт под брезентом. Инструменты и запчасти давно растащили.', lootKey: 'house', vehicleChance: 0.78, vehicleTypes: ['bicycle', 'motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 3, chance: 0.76, minMinutes: 35, maxMinutes: 60 } },
+{ name: 'Стоянка старого шоссе', sceneKey: 'road', desc: 'На обочине остались несколько машин; багажники закрыты, вокруг видны свежие следы.', lootKey: 'house', vehicleChance: 0.62, vehicleTypes: ['motorcycle', 'car', 'truck'], searchProfile: { maxAttempts: 2, chance: 0.72, minMinutes: 25, maxMinutes: 45 } }
 ];
 let availableTemplates = templates.filter(template => !excludedNames.includes(template.name));
 if (!availableTemplates.length) availableTemplates = templates;
@@ -2124,9 +2257,10 @@ let html = `<div class="flex items-center justify-between text-xs"><span class="
 let vehicleOffers = Object.entries(transportTypes).map(([type, spec]) => `<div class="flex items-center justify-between gap-2 border-b border-slate-800 py-2"><div><div class="text-xs font-semibold text-slate-200">${spec.label}</div><div class="text-[10px] text-slate-500">Исправен · ${spec.cargoSlots} слотов · ${spec.fuelCapacity ? `${Math.round(spec.fuelCapacity * 0.65)} л топлива` : 'без топлива'}</div></div><button onclick="buyVehicleAtMarket('${type}')" class="bg-emerald-800 hover:bg-emerald-700 text-emerald-100 px-2.5 py-1.5 rounded text-[10px] font-semibold">${spec.purchasePrice} жет. · Купить</button></div>`).join('');
 html += `<div class="mt-3 border-t border-slate-800 pt-3"><div class="font-bold text-emerald-300 text-xs mb-1">Транспорт под заказ</div><div class="text-[10px] text-slate-500">Исправный, с базовым запасом топлива. Доставят прямо в поселок.</div>${vehicleOffers}</div>`;
 quests.forEach((quest, index) => {
-let status = state.activeQuest ? 'Завершите текущее задание' : 'Взять';
+let status = getActiveQuestList().length >= 2 ? 'Лимит заданий' : 'Взять';
 let rewardText = quest.rewardType === 'credits' ? `${quest.reward} жетонов` : quest.rewardType === 'heal' ? `здоровье +${quest.reward}%` : `${quest.rewardItem} ×${quest.rewardCount}`;
-html += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-lg"><div class="font-semibold text-slate-200 text-sm">${quest.title || `${quest.itemName} → ${quest.target}`}</div><div class="text-xs text-slate-400 mt-1">${quest.type === 'scout' ? 'Разведка с возвращением к заказчику' : `Доставка в ${quest.target}`} · награда: ${rewardText}</div><button onclick="acceptShopQuest(${index})" ${state.activeQuest ? 'disabled' : ''} class="mt-2 bg-amber-700 hover:bg-amber-600 disabled:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">${status}</button></div>`;
+let questKind = quest.type === 'scout' ? 'Разведка' : quest.type === 'search' ? 'Тщательный обыск' : quest.type === 'choice' ? 'Решение с последствиями' : 'Доставка';
+html += `<div class="bg-slate-950 border border-slate-800 p-3 rounded-lg"><div class="font-semibold text-slate-200 text-sm">${quest.title || `${quest.itemName} → ${quest.target}`}</div><div class="text-xs text-slate-400 mt-1">${questKind} · цель: ${quest.target} · награда: ${rewardText}</div><button onclick="acceptShopQuest(${index})" ${getActiveQuestList().length >= 2 ? 'disabled' : ''} class="mt-2 bg-amber-700 hover:bg-amber-600 disabled:bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer">${status}</button></div>`;
 });
 html += '</div>';
 showModal(`Рынок Малой Токмачки · день ${state.day}`, html, [{ text: 'Закрыть', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]);
@@ -2196,21 +2330,43 @@ openTransportModal();
 }
 
 function activateQuest(quest) {
+let activeQuests = getActiveQuestList();
+if (activeQuests.length >= 2) {
+showModal('Слишком много заданий', 'Можно вести одновременно не больше двух побочных заданий.', [{ text: 'Понятно', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]);
+return;
+}
 quest.acceptedDay = state.day;
 let trust = state.relationships[quest.giverName] || 0;
 quest.deadlineDay = state.day + (trust >= 20 ? 3 : trust <= -20 ? 1 : 2);
 quest.delivered = false;
-state.activeQuest = quest;
-let objective = quest.type === 'scout' ? `разведать <b>${quest.target}</b>` : `доставить <b>${quest.itemName}</b> в <b>${quest.target}</b>`;
+if (Array.isArray(quest.stages)) {
+quest.stageIndex = 0;
+syncQuestStage(quest);
+}
+activeQuests.push(quest);
+state.activeQuest = activeQuests[0] || quest;
+let objective = getQuestObjectiveText(quest);
 addLog(`Вы приняли поручение: ${objective} до дня ${quest.deadlineDay}.${trust >= 20 ? ' Заказчик доверяет вам и дал дополнительный день.' : trust <= -20 ? ' Из-за недоверия срок сокращен.' : ''}`, 'success');
 updateUI();
 }
 
 function abandonActiveQuest() {
-if (!state.activeQuest || state.activeQuest.delivered) return;
+let activeQuests = getActiveQuestList();
+if (!activeQuests.length || activeQuests[0].delivered) return;
 let quest = state.activeQuest;
-state.activeQuest = null;
+activeQuests.shift();
+state.activeQuest = activeQuests[0] || null;
 addLog(`Вы отказались от поручения «${quest.itemName} → ${quest.target}».`, 'info');
+updateUI();
+}
+
+function abandonQuest(index) {
+let activeQuests = getActiveQuestList();
+let quest = activeQuests[index];
+if (!quest || quest.delivered) return;
+activeQuests.splice(index, 1);
+state.activeQuest = activeQuests[0] || null;
+addLog(`Вы отказались от поручения «${quest.title || quest.itemName}».`, 'info');
 updateUI();
 }
 
@@ -2228,9 +2384,16 @@ return 'Вернитесь в бункер и решите, как ответи�
 function getActiveQuestObjective() {
 const quest = state.activeQuest;
 if (!quest) return '';
-if (quest.delivered) return `Задача выполнена. Вернитесь к ${quest.giverName || 'заказчику'}: ${quest.giver}.`;
-if (quest.type === 'scout') return `Разведайте место: ${quest.target}. После осмотра вернитесь к заказчику.`;
-return `Доставьте ${quest.itemName} в ${quest.target}.`;
+if (quest.delivered) return `Все этапы выполнены. Вернитесь к ${quest.giverName || 'заказчику'}: ${quest.giver}.`;
+let stageText = quest.type === 'search'
+? `Тщательно осмотрите место: ${quest.target}.`
+: quest.type === 'scout'
+? `Разведайте место: ${quest.target}.`
+: quest.type === 'choice'
+? `Проверьте сигнал бедствия у ${quest.target} и примите решение.`
+: `Доставьте ${quest.itemName} в ${quest.target}.`;
+if (Array.isArray(quest.stages)) stageText = `Этап ${(quest.stageIndex || 0) + 1}/${quest.stages.length}: ${stageText}`;
+return stageText;
 }
 
 function getQuestLogEntries() {
@@ -2242,17 +2405,16 @@ title: 'Радиосигнал',
 objective: getStoryObjective(),
 done: Boolean(state.storyEnding)
 });
-if (state.activeQuest) {
-const quest = state.activeQuest;
+getActiveQuestList().forEach((quest, questIndex) => {
 const deadlineDay = quest.deadlineDay || state.day + 2;
 entries.push({
-id: 'quest',
+id: `quest-${questIndex}`,
 kind: 'Побочное задание',
-title: `${quest.title || 'Поручение'} · срок до дня ${deadlineDay}`,
-objective: getActiveQuestObjective(),
+title: `${quest.title || 'Поручение'} · срок до дня ${deadlineDay}${Array.isArray(quest.stages) ? ` · этап ${(quest.stageIndex || 0) + 1}/${quest.stages.length}` : ''}`,
+objective: quest === state.activeQuest ? getActiveQuestObjective() : getQuestObjectiveText(quest),
 done: Boolean(quest.delivered)
 });
-}
+});
 if (state.loneHouseFamily && state.loneHouseFamily.status === 'alive') {
 const deadline = state.loneHouseFamily.foodDeadlineDay;
 entries.push({
@@ -2277,6 +2439,7 @@ return entries;
 
 function getPinnedQuestEntry() {
 if (!state.pinnedQuestId) return null;
+if (state.pinnedQuestId === 'quest') return getQuestLogEntries().find(entry => entry.id === 'quest-0') || null;
 return getQuestLogEntries().find(entry => entry.id === state.pinnedQuestId) || null;
 }
 
@@ -2294,8 +2457,9 @@ if (!entries.length) html += '<p class="text-slate-400">Пока нет акти
 entries.forEach(entry => {
 const pinned = state.pinnedQuestId === entry.id;
 const kindClass = entry.kind === 'Основной сюжет' ? 'text-amber-500' : 'text-cyan-500';
-const abandon = (entry.id === 'quest' && state.activeQuest && !state.activeQuest.delivered)
-? `<button onclick="abandonActiveQuest(); closeModal();" class="text-[10px] text-rose-300 hover:text-rose-200 underline cursor-pointer">Отказаться</button>`
+const questIndex = entry.id.startsWith('quest-') ? Number(entry.id.slice(6)) : -1;
+const abandon = (questIndex >= 0 && getActiveQuestList()[questIndex] && !getActiveQuestList()[questIndex].delivered)
+? `<button onclick="abandonQuest(${questIndex}); closeModal();" class="text-[10px] text-rose-300 hover:text-rose-200 underline cursor-pointer">Отказаться</button>`
 : '';
 html += `<div class="bg-slate-950 border ${pinned ? 'border-amber-500' : 'border-slate-800'} p-3 rounded-lg"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><div class="text-[10px] uppercase tracking-wide ${kindClass}">${entry.kind}</div><div class="font-semibold text-slate-200">${entry.title}</div><div class="text-xs text-slate-400 mt-1">${entry.objective}</div>${entry.done ? '<div class="text-[10px] text-emerald-400 mt-1">✓ Выполнено</div>' : ''}</div><div class="flex flex-col items-end gap-1 shrink-0"><button onclick="togglePinnedQuest('${entry.id}')" class="${pinned ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-800 hover:bg-slate-700'} text-white px-3 py-1.5 rounded-lg text-[10px] font-semibold cursor-pointer whitespace-nowrap">${pinned ? '📌 Открепить' : '📌 Закрепить'}</button>${abandon}</div></div></div>`;
 });
@@ -2306,7 +2470,7 @@ showModal('Квесты и задания', html, [{ text: 'Закрыть', cla
 function acceptShopQuest(index) {
 let location = getCurrentRoadLocation();
 if (!location) return;
-if (state.activeQuest) {
+if (getActiveQuestList().length >= 2) {
 showModal('Задание уже взято', 'Сначала завершите текущее поручение.', [{ text: 'ОК', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]);
 return;
 }
@@ -2396,6 +2560,7 @@ templateName: template.name,
 desc: template.desc,
 generated: true,
 kind: template.kind || 'road',
+sceneKey: template.sceneKey || 'road',
 lootKey: template.lootKey,
 searchProfile: template.searchProfile,
 fuelStockLiters: template.kind === 'gasStation' ? randomInt(template.fuelStockMin, template.fuelStockMax) : 0,
@@ -2582,11 +2747,18 @@ if (!['alive', 'dead'].includes(state.loneHouseFamily.status)) state.loneHouseFa
 if (!Object.prototype.hasOwnProperty.call(state.loneHouseFamily, 'foodDeadlineDay')) state.loneHouseFamily.foodDeadlineDay = null;
 if (!Object.prototype.hasOwnProperty.call(state.loneHouseFamily, 'lastSuppliesDay')) state.loneHouseFamily.lastSuppliesDay = null;
 if (!Object.prototype.hasOwnProperty.call(state, 'activeQuest')) state.activeQuest = null;
+if (!Array.isArray(state.activeQuests)) state.activeQuests = state.activeQuest ? [state.activeQuest] : [];
+if (state.activeQuest && !state.activeQuests.includes(state.activeQuest)) state.activeQuests.unshift(state.activeQuest);
+state.activeQuest = state.activeQuests[0] || null;
 if (!Object.prototype.hasOwnProperty.call(state, 'pinnedQuestId')) state.pinnedQuestId = null;
 if (state.activeQuest) {
 if (typeof state.activeQuest.acceptedDay !== 'number') state.activeQuest.acceptedDay = state.day;
 if (typeof state.activeQuest.deadlineDay !== 'number') state.activeQuest.deadlineDay = state.day + 2;
 if (typeof state.activeQuest.delivered !== 'boolean') state.activeQuest.delivered = false;
+if (Array.isArray(state.activeQuest.stages)) {
+if (!Number.isInteger(state.activeQuest.stageIndex)) state.activeQuest.stageIndex = 0;
+syncQuestStage(state.activeQuest);
+}
 }
 if (!Object.prototype.hasOwnProperty.call(state, 'hasPaperMap')) state.hasPaperMap = false;
 if (!Array.isArray(state.generatedLocations)) state.generatedLocations = [];
@@ -2929,40 +3101,6 @@ return true;
 }
 addLog(`Рюкзак полон — <b>${item.name}</b> не поместился и оставлен на месте. Освободите место и вернитесь за ним.`, 'danger');
 return false;
-}
-
-
-
-function toggleNotes() {
-
-const drawer = document.getElementById('notes-drawer');
-
-if (drawer.classList.contains('hidden')) {
-
-drawer.classList.remove('hidden');
-
-drawer.classList.add('flex');
-
-document.getElementById('notes-input').value = state.notesText;
-
-} else {
-
-drawer.classList.remove('flex');
-
-drawer.classList.add('hidden');
-
-}
-
-}
-
-
-
-function saveNotes() {
-
-state.notesText = document.getElementById('notes-input').value;
-
-localStorage.setItem('bunker_notes', state.notesText);
-
 }
 
 
@@ -3414,7 +3552,8 @@ return '<defs><linearGradient id="spSign" x1="0" y1="0" x2="0" y2="1"><stop offs
 function sceneBackground(room) {
 const url = BUNKER_SCENE.backgrounds[room];
 if (url) return `<div class="scene-bg scene-bg-img" style="background-image:url('${url}')"></div>`;
-const art = BG_ART[room];
+const outdoorBase = { waterTower: 'forest', gasStation: 'road', checkpoint: 'forest', busStop: 'road', quarry: 'lake', garage: 'road' };
+const art = BG_ART[room] || OUTDOOR_BG_ART[room] || OUTDOOR_BG_ART[outdoorBase[room]];
 if (!art) return '';
 return `<svg class="scene-bg" viewBox="0 0 800 350" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${art()}</svg>`;
 }
@@ -3586,6 +3725,32 @@ return '<defs>'
 + '<rect x="96" y="58" width="74" height="74" rx="6" fill="#e2e8f0" opacity="0.85"/><rect x="128" y="70" width="10" height="50" fill="#dc2626"/><rect x="106" y="90" width="54" height="10" fill="#dc2626"/>'
 + '<rect x="0" y="250" width="800" height="100" fill="url(#bgClinFloor)"/><rect x="0" y="248" width="800" height="3" fill="#000" opacity="0.5"/>'
 + '<rect width="800" height="350" fill="url(#bgClinLight)"/>';
+}
+};
+const OUTDOOR_BG_ART = {
+forest() {
+return '<defs><linearGradient id="outForestSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#263b4a"/><stop offset="1" stop-color="#91a37d"/></linearGradient><linearGradient id="outForestGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#56633c"/><stop offset="1" stop-color="#1e281c"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outForestSky)"/><circle cx="610" cy="62" r="34" fill="#f6d58a" opacity=".45"/><path d="M0 222 Q180 170 360 218 T800 190 V350 H0Z" fill="url(#outForestGround)"/><path d="M370 350 Q400 280 440 218 Q470 190 500 175 Q478 260 535 350Z" fill="#8b7044" opacity=".72"/>'
+},
+loneHouse() {
+return '<defs><linearGradient id="outLoneSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#455565"/><stop offset="1" stop-color="#b5a27f"/></linearGradient><linearGradient id="outLoneGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#716347"/><stop offset="1" stop-color="#29231b"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outLoneSky)"/><rect y="220" width="800" height="130" fill="url(#outLoneGround)"/><path d="M0 285 Q190 238 370 282 T800 270" fill="none" stroke="#443522" stroke-width="44"/><path d="M225 226 V108 H590 V226Z" fill="#704d34" stroke="#2c2119" stroke-width="8"/><path d="M195 112 L407 28 L620 112Z" fill="#39291f" stroke="#211914" stroke-width="8"/><rect x="278" y="137" width="82" height="62" fill="#1d2b35" stroke="#1b1714" stroke-width="7"/><rect x="450" y="137" width="82" height="62" fill="#1d2b35" stroke="#1b1714" stroke-width="7"/><path d="M290 148 l58 42 M348 148 l-58 42 M462 148 l58 42 M520 148 l-58 42" stroke="#6d5540" stroke-width="5"/><rect x="380" y="160" width="52" height="66" fill="#3a271b" stroke="#211914" stroke-width="6"/><path d="M95 225 V130 M95 130 L155 166 M95 168 L155 130" stroke="#725839" stroke-width="8"/><circle cx="95" cy="119" r="10" fill="#6d8b52"/>';
+},
+lake() {
+return '<defs><linearGradient id="outLakeSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38566a"/><stop offset="1" stop-color="#a9b9ad"/></linearGradient><linearGradient id="outLakeWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d7882"/><stop offset="1" stop-color="#102f3b"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outLakeSky)"/><circle cx="130" cy="70" r="32" fill="#f9d58b" opacity=".5"/><path d="M0 148 Q150 108 300 150 T600 145 T800 152 V350 H0Z" fill="url(#outLakeWater)"/><path d="M0 154 Q150 118 300 156 T600 151 T800 158" fill="none" stroke="#a6d2c8" stroke-width="4" opacity=".5"/><path d="M0 238 Q190 205 390 240 T800 230 V350 H0Z" fill="#4c5538"/><path d="M430 350 L484 205 L535 205 L600 350Z" fill="#765b37" opacity=".9"/>';
+},
+road() {
+return '<defs><linearGradient id="outRoadSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#566677"/><stop offset="1" stop-color="#c2b38d"/></linearGradient><linearGradient id="outRoadGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#756c4e"/><stop offset="1" stop-color="#27251d"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outRoadSky)"/><path d="M0 205 Q180 175 350 210 T800 190 V350 H0Z" fill="url(#outRoadGround)"/><path d="M340 350 Q370 270 392 205 Q410 180 430 205 Q460 280 520 350Z" fill="#2b3031"/><path d="M408 332 L420 300 M416 270 L421 248" stroke="#d8b96b" stroke-width="7" stroke-linecap="round" opacity=".7"/><path d="M0 180 L800 174" stroke="#2f3d32" stroke-width="7" opacity=".65"/>';
+},
+ruins() {
+return '<defs><linearGradient id="outRuinSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b424c"/><stop offset="1" stop-color="#9a806a"/></linearGradient><linearGradient id="outRuinGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#665349"/><stop offset="1" stop-color="#211c1c"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outRuinSky)"/><rect y="210" width="800" height="140" fill="url(#outRuinGround)"/><path d="M40 220 V95 H230 V220 M250 220 V132 H390 V220 M548 220 V76 H780 V220" fill="#34363a" stroke="#1b2025" stroke-width="8"/><path d="M85 140 h42 v58 H85z M285 157 h35 v42 h-35z M615 111 h48 v70 h-48z" fill="#111921"/><g fill="#a3815f"><path d="M260 270 l42 -28 35 23 -40 30z"/><path d="M480 283 l48 -32 38 27 -51 31z"/><path d="M700 270 l42 -24 26 20 -43 31z"/></g>';
+},
+settlement() {
+return '<defs><linearGradient id="outSettleSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4d6070"/><stop offset="1" stop-color="#b9a47b"/></linearGradient><linearGradient id="outSettleGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#746342"/><stop offset="1" stop-color="#282219"/></linearGradient></defs>'
++ '<rect width="800" height="350" fill="url(#outSettleSky)"/><rect y="212" width="800" height="138" fill="url(#outSettleGround)"/><path d="M0 315 Q190 255 390 310 T800 285" fill="none" stroke="#302a21" stroke-width="56" opacity=".9"/><g fill="#665238" stroke="#30251a" stroke-width="5"><path d="M80 215 V120 H205 V215Z M55 122 L142 70 L230 122Z"/><path d="M270 215 V140 H400 V215Z M250 142 L335 92 L420 142Z"/><path d="M570 215 V112 H710 V215Z M545 114 L640 54 L735 114Z"/></g>';
 }
 };
 
@@ -3784,9 +3949,108 @@ if (desc) desc.innerHTML = `<span class="desc-title" style="color:#fbbf24">${bui
 renderVillageScene(current);
 }
 
+function getOutdoorSceneKey(location) {
+if (!location) return 'road';
+if (location.sceneKey) return location.sceneKey;
+if (location.id === FOREST_HOUSE_ID) return 'forest';
+if (location.id === LONE_HOUSE_ID) return 'loneHouse';
+if (location.id === LAKE_ID) return 'lake';
+if (location.id === TOPAR_ID) return 'ruins';
+if (location.id === TOKMACHKA_ID) return 'settlement';
+let lower = `${location.name || ''} ${location.desc || ''}`.toLowerCase();
+if (location.kind === 'gasStation' || lower.includes('заправ')) return 'gasStation';
+if (lower.includes('водонапор')) return 'forest';
+if (lower.includes('карьер') || lower.includes('озер')) return 'lake';
+if (lower.includes('гараж')) return 'road';
+if (lower.includes('руин')) return 'ruins';
+if (lower.includes('кордон')) return 'forest';
+return 'road';
+}
+
+function buildOutdoorScene(location, sceneKey) {
+let html = '';
+if (sceneKey === 'forest') {
+html += sceneEmoji('🌲🌲', 'Лес', '18%', '18%', { size: 48 });
+html += sceneEmoji('🏚️', location.id === FOREST_HOUSE_ID ? 'Заброшенный дом' : 'Лесной объект', '58%', '18%', { size: 45 });
+html += sceneEmoji('🔥', 'Следы костра', '78%', '18%', { size: 24, dim: true });
+} else if (sceneKey === 'loneHouse') {
+html += sceneEmoji('🏠', 'Одинокий дом', '47%', '18%', { size: 52 });
+html += sceneEmoji('👨‍👩‍👧', 'Семья внутри', '61%', '40%', { size: 28 });
+html += sceneEmoji('🥫', 'Почти закончились припасы', '24%', '16%', { size: 28, sub: 'нужна помощь' });
+} else if (sceneKey === 'lake') {
+html += sceneEmoji('🌊', 'Вода', '57%', '22%', { size: 58, hideLabel: true });
+html += sceneEmoji('🛶', location.id === LAKE_ID ? 'Старый причал' : 'Следы лагеря', '48%', '19%', { size: 38 });
+html += sceneEmoji('🎣', 'Рыбацкие снасти', '80%', '16%', { size: 30 });
+} else if (sceneKey === 'ruins') {
+html += sceneEmoji('🏚️', 'Разрушенный квартал', '27%', '18%', { size: 48 });
+html += sceneEmoji('⚠️', 'Опасная зона', '62%', '17%', { size: 30 });
+html += sceneEmoji('🧱', 'Обломки', '83%', '16%', { size: 30, dim: true });
+} else if (sceneKey === 'settlement') {
+html += sceneEmoji('🏠🏠', 'Поселок', '48%', '18%', { size: 45 });
+html += sceneEmoji('🪧', 'Улица Токмачки', '76%', '16%', { size: 30 });
+html += sceneEmoji('🚶', 'Жители', '22%', '17%', { size: 28, dim: true });
+} else if (sceneKey === 'waterTower') {
+html += sceneEmoji('🗼', 'Водонапорная башня', '52%', '15%', { size: 54 });
+html += sceneEmoji('🔧', 'Технический люк', '76%', '15%', { size: 26 });
+html += sceneEmoji('🌿', 'Заросшая дорога', '20%', '15%', { size: 32, dim: true });
+} else if (sceneKey === 'gasStation') {
+html += sceneEmoji('⛽', 'Старая АЗС', '48%', '15%', { size: 48 });
+html += sceneEmoji('🚗', 'Брошенные машины', '76%', '15%', { size: 35, dim: true });
+html += sceneEmoji('🛢️', 'Запас топлива', '20%', '15%', { size: 30 });
+} else if (sceneKey === 'checkpoint') {
+html += sceneEmoji('🛖', 'Кордон лесников', '49%', '16%', { size: 46 });
+html += sceneEmoji('🔥', 'Кострище', '72%', '16%', { size: 28 });
+html += sceneEmoji('🌲', 'Следы в лесу', '18%', '17%', { size: 38, dim: true });
+} else if (sceneKey === 'busStop') {
+html += sceneEmoji('🚏', 'Остановка', '50%', '16%', { size: 48 });
+html += sceneEmoji('🧳', 'Чья-то сумка', '73%', '15%', { size: 28 });
+html += sceneEmoji('📰', 'Старые газеты', '25%', '15%', { size: 26, dim: true });
+} else if (sceneKey === 'quarry') {
+html += sceneEmoji('🌊', 'Затопленный карьер', '52%', '20%', { size: 58, hideLabel: true });
+html += sceneEmoji('⛺', 'Следы лагеря', '73%', '17%', { size: 36 });
+html += sceneEmoji('🧱', 'Бетонный забор', '20%', '15%', { size: 34, dim: true });
+} else if (sceneKey === 'garage') {
+html += sceneEmoji('🏚️', 'Заброшенный гараж', '48%', '17%', { size: 48 });
+html += sceneEmoji('🛠️', 'Ремонтная яма', '73%', '15%', { size: 32 });
+html += sceneEmoji('🚗', 'Транспорт под брезентом', '22%', '15%', { size: 36, dim: true });
+} else {
+html += sceneEmoji('🛣️', 'Старая дорога', '50%', '15%', { size: 50 });
+html += sceneEmoji('🚙', 'Брошенный транспорт', '76%', '15%', { size: 36, dim: true });
+html += sceneEmoji('👣', 'Свежие следы', '22%', '15%', { size: 28 });
+}
+if (location.vehicleSpawn && !location.vehicleSpawn.recovered) {
+const vehicleIcon = { bicycle: '🚲', motorcycle: '🏍️', car: '🚗', truck: '🚚' }[location.vehicleSpawn.type] || '🚗';
+html += sceneEmoji(vehicleIcon, 'Найденный транспорт', '90%', '44%', { size: 25, sub: location.vehicleSpawn.inspected ? 'осмотрен' : 'не осмотрен' });
+}
+return html;
+}
+
+function renderOutdoorScene(location) {
+const panel = document.getElementById('location-scene-panel');
+const scene = document.getElementById('location-scene');
+if (!panel || !scene) return;
+const isBunker = location && location.id === BUNKER_ID;
+const isVillageBuilding = location && Boolean(VILLAGE_BUILDINGS[location.id]);
+const shouldShow = Boolean(location && !isBunker && !isVillageBuilding);
+panel.classList.toggle('hidden', !shouldShow);
+if (!shouldShow) return;
+const sceneKey = getOutdoorSceneKey(location);
+scene.className = `bunker-scene outdoor-scene outdoor-${sceneKey}`;
+scene.innerHTML = sceneBackground(sceneKey) + `<div class="scene-vignette"></div>` + buildOutdoorScene(location, sceneKey);
+const desc = document.getElementById('location-scene-desc');
+if (desc) desc.innerHTML = `<span class="desc-title" style="color:#fbbf24">${location.shortName || location.name}</span> — ${location.desc || 'Осмотритесь вокруг.'}`;
+}
+
 function updateUI() {
 
 ensureTimeState();
+
+if (state.health <= 0 && !state.gameOver) {
+state.gameOver = true;
+showModal("КОНЕЦ ИГРЫ", `Вы погибли на ${state.location}. Вы прожили до дня ${state.day}. Рекорд выживания: ${getBestSurvivalRecord()} дней.`, [
+{ text: "Начать заново", className: "bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => location.reload(), keepOpen: true }
+]);
+}
 
 let isInBunker = state.location === 'Бункер (Убежище)';
 if (!BUNKER_ROOM_IDS.includes(state.bunkerRoom)) state.bunkerRoom = 'main';
@@ -3875,6 +4139,11 @@ if (localVehicle) sleepVehicleBtn.title = `Спать в: ${transportTypes[local
 }
 if (sleepOutsideBtn) sleepOutsideBtn.classList.toggle('hidden', isInBunker || Boolean(localVehicle));
 document.getElementById('wait-button').classList.toggle('hidden', isInBunker);
+const accessibleAreas = getAccessibleAreas();
+const hasFood = accessibleAreas.some(list => list.some(item => item.type === 'Еда' && item.count > 0));
+const hasWater = accessibleAreas.some(list => list.some(item => item.type === 'Вода' && item.liters > 0));
+document.getElementById('eat-button').classList.toggle('hidden', !hasFood);
+document.getElementById('drink-button').classList.toggle('hidden', !hasWater);
 let canFish = state.location.includes('Лесное озеро') && state.activeLoadout.some(item => item.name === 'Удочки');
 document.getElementById('fish-button').classList.toggle('hidden', !canFish);
 const cookAreas = isInBunker ? [state.activeLoadout, state.bunkerStorage] : [state.activeLoadout];
@@ -3883,10 +4152,17 @@ const hasCookware = cookAreas.some(list => list.some(item => item.cookware));
 const hasWood = cookAreas.some(list => list.some(item => item.name === 'Древесина'));
 const canCookHere = hasRawFood && hasCookware && hasWood && (!isInBunker || bunkerRoom === 'kitchen');
 document.getElementById('cook-button').classList.toggle('hidden', !canCookHere);
+const cookingPanel = document.getElementById('kitchen-cooking-panel');
+const cookingButton = document.getElementById('kitchen-cooking-button');
+const cookingStatus = document.getElementById('kitchen-cooking-status');
+if (cookingPanel) cookingPanel.classList.toggle('hidden', !(isInBunker && bunkerRoom === 'kitchen'));
+if (cookingButton) cookingButton.disabled = false;
+if (cookingStatus) cookingStatus.innerText = canCookHere ? 'Можно готовить' : 'Нужны продукты, дрова и посуда';
 document.getElementById('end-day-button').classList.toggle('hidden', !(isInBunker && bunkerRoom === 'main'));
 ensureExplorationState();
 const currentGeneratedLocation = locationsData.find(location => location.name === state.location && location.generated);
 const currentLocationId = getCurrentLocationId();
+renderOutdoorScene(locationsData.find(location => location.name === state.location));
 const transportButton = document.getElementById('transport-button');
 const selectedVehicle = getActiveVehicleAt(currentLocationId);
 if (transportButton) {
@@ -3917,23 +4193,21 @@ const roomInfo = BUNKER_ROOMS.find(entry => entry.id === bunkerRoom) || BUNKER_R
 const roomDone = Boolean(state.searchedLocations[`${state.location}::${bunkerRoom}`]);
 searchButton.innerText = `🔎 Обыскать: ${roomInfo.label}`;
 searchButton.title = roomDone ? 'В этой комнате уже всё найдено' : 'Обыскать эту комнату бункера';
-searchButton.disabled = roomDone;
-searchButton.classList.toggle('opacity-50', roomDone);
-searchButton.classList.toggle('cursor-not-allowed', roomDone);
+searchButton.disabled = false;
+searchButton.classList.toggle('hidden', roomDone);
 } else if (currentGeneratedLocation) {
 const profile = currentGeneratedLocation.searchProfile || { maxAttempts: 2 };
 const progress = state.generatedSearchProgress[currentGeneratedLocation.id] || { attempts: 0 };
 const remainingSearches = Math.max(0, profile.maxAttempts - progress.attempts);
 searchButton.innerText = `🔎 Исследовать место (${progress.attempts}/${profile.maxAttempts})`;
 searchButton.title = remainingSearches ? `Осталось этапов поиска: ${remainingSearches}` : 'Локация полностью обследована';
-searchButton.disabled = remainingSearches === 0;
-searchButton.classList.toggle('opacity-50', remainingSearches === 0);
-searchButton.classList.toggle('cursor-not-allowed', remainingSearches === 0);
+searchButton.disabled = false;
+searchButton.classList.toggle('hidden', remainingSearches === 0);
 } else {
 searchButton.innerText = '🔎 Обыскать место';
 searchButton.title = '';
 searchButton.disabled = false;
-searchButton.classList.remove('opacity-50', 'cursor-not-allowed');
+searchButton.classList.remove('hidden', 'opacity-50', 'cursor-not-allowed');
 }
 let currentRoadLocation = getCurrentRoadLocation();
 document.getElementById('road-shop-button').classList.toggle('hidden', !currentRoadLocation || !currentRoadLocation.shopAvailable);
@@ -4007,6 +4281,7 @@ filteredLoadout.forEach(({ item, idx }) => {
 let li = document.createElement('li');
 
 li.id = `loadout-item-${idx}`;
+li.setAttribute('onclick', `openInventoryItemMenu('loadout', ${idx})`);
 li.className = 'bg-slate-950 border border-slate-800 hover:border-slate-700 p-2 rounded-lg flex items-center justify-between text-xs transition';
 
 let extra = '';
@@ -4019,10 +4294,10 @@ if (item.type === 'Вода') extra = ` (${item.liters.toFixed(1)} л)`;
 
 let loadoutActions = [];
 if (item.type === 'Рюкзак') {
-loadoutActions.push(`<button onclick="equipBackpackFromLoadout(${idx})" class="bg-slate-900 hover:bg-slate-800 text-amber-400 px-2 py-1 rounded text-[10px] cursor-pointer">Надеть</button>`);
+loadoutActions.push(`<button onclick="event.stopPropagation(); equipBackpackFromLoadout(${idx})" class="bg-slate-900 hover:bg-slate-800 text-amber-400 px-2 py-1 rounded text-[10px] cursor-pointer">Надеть</button>`);
 } else {
-if (item.heal) loadoutActions.push(`<button onclick="useMedicine(${idx}, 'loadout')" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-300 px-2 py-1 rounded text-[10px] cursor-pointer">Использовать</button>`);
-loadoutActions.push(`<button onclick="openQuantityModal('loadout', ${idx})" class="bg-slate-900 hover:bg-slate-800 text-cyan-400 px-2 py-1 rounded text-[10px] cursor-pointer">В бункер</button>`);
+if (item.heal) loadoutActions.push(`<button onclick="event.stopPropagation(); useMedicine(${idx}, 'loadout')" class="bg-emerald-900 hover:bg-emerald-800 text-emerald-300 px-2 py-1 rounded text-[10px] cursor-pointer">Использовать</button>`);
+loadoutActions.push(`<button onclick="event.stopPropagation(); openQuantityModal('loadout', ${idx})" class="bg-slate-900 hover:bg-slate-800 text-cyan-400 px-2 py-1 rounded text-[10px] cursor-pointer">В бункер</button>`);
 }
 let loadoutAction = `<span class="flex flex-wrap gap-1 justify-end">${loadoutActions.join('')}</span>`;
 
@@ -4069,6 +4344,7 @@ bunkerList.innerHTML = '<li class="text-center text-slate-500 py-4 text-[11px] i
 
 let li = document.createElement('li');
 
+li.setAttribute('onclick', `openInventoryItemMenu('storage', ${idx})`);
 li.className = 'bg-slate-950 border border-slate-800 hover:border-slate-700 p-2 rounded-lg flex items-center justify-between text-xs transition';
 
 let extra = '';
@@ -4110,6 +4386,8 @@ bunkerList.appendChild(li);
 
 }
 
+if (currentSlot !== null && !state.gameOver) performSave();
+
 }
 
 
@@ -4127,6 +4405,8 @@ let color = 'text-amber-400';
 if (type === 'danger') color = 'text-rose-400';
 
 if (type === 'success') color = 'text-emerald-400';
+
+if (type === 'warning') color = 'text-amber-300';
 
 div.innerHTML = `<span class="${color} font-bold">[День ${state.day}]:</span> ${text}`;
 
@@ -4476,6 +4756,48 @@ showModal("Утоление жажды", `<p>В бутыли: ${waterItem.liters
 
 
 
+function discardInventoryItem(source, idx) {
+const list = source === 'loadout' ? state.activeLoadout : state.bunkerStorage;
+const item = list[idx];
+if (!item) return;
+showModal('Выбросить предмет?', `<p><b>${item.name}</b> будет потерян.</p>`, [
+{ text: 'Выбросить', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => {
+list.splice(idx, 1);
+addLog(`Вы выбросили предмет: <b>${item.name}</b>.`, 'info');
+updateUI();
+} },
+{ text: 'Отмена', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
+]);
+}
+
+function openConsumeModalForItem(item, type) {
+if (type === 'food') {
+showModal('Прием пищи', `<p>Доступно: ${item.count} шт.</p>`, [
+{ text: 'Съесть половину (-0.5)', className: 'bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer', onClick: () => consumeFood(item, 0.5) },
+{ text: 'Съесть целую (-1.0)', className: 'bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer', onClick: () => consumeFood(item, 1.0) },
+{ text: 'Отмена', className: 'bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer' }
+]);
+return;
+}
+showModal('Утоление жажды', `<p>В бутылке: ${item.liters.toFixed(1)} л.</p>`, [
+{ text: 'Выпить 0.5 л', className: 'bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer', onClick: () => consumeWater(item, 0.5) },
+{ text: 'Выпить 1.0 л', className: 'bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer', onClick: () => consumeWater(item, 1.0) },
+{ text: 'Отмена', className: 'bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer' }
+]);
+}
+
+function openInventoryItemMenu(source, idx) {
+const list = source === 'loadout' ? state.activeLoadout : source === 'storage' ? state.bunkerStorage : state.bunkerStorage;
+const item = list[idx];
+if (!item) return;
+const actions = [];
+if ((source === 'loadout' || source === 'storage') && item.type === 'Еда' && item.count > 0) actions.push({ text: 'Съесть', className: 'bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => openConsumeModalForItem(item, 'food'), keepOpen: true });
+if ((source === 'loadout' || source === 'storage') && item.type === 'Вода' && item.liters > 0) actions.push({ text: 'Выпить', className: 'bg-cyan-700 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => openConsumeModalForItem(item, 'water'), keepOpen: true });
+actions.push({ text: 'Выбросить', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => discardInventoryItem(source, idx) });
+actions.push({ text: 'Отмена', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' });
+showModal(item.name, '<p class="text-slate-400">Выберите действие для предмета.</p>', actions);
+}
+
 function consumeFood(foodItem, amount) {
 
 foodItem.count -= amount;
@@ -4488,11 +4810,11 @@ state.bunkerStorage = state.bunkerStorage.filter(i => i !== foodItem);
 
 }
 
-let restored = amount === 1.0 ? 30 : 15;
+let restored = amount >= 1 ? (foodItem.foodValue || 30) : Math.round((foodItem.foodValue || 30) / 2);
 
 state.hunger = Math.min(100, state.hunger + restored);
 
-state.health = Math.min(100, state.health + 5);
+state.health = Math.min(100, state.health + (foodItem.healthRestore || 5));
 
 addLog(`Съедено: <b>${foodItem.name}</b> (${amount}). Сытость +${restored}%.`, 'success');
 
@@ -4681,13 +5003,13 @@ closeModal();
 if (!spendActionTime(rec.duration, `${rec.verb}: ${rec.input}`)) return;
 consumeCookItem(rec.input, 1);
 consumeCookItem('Древесина', 1);
-let output = { id: Date.now() + Math.random(), name: rec.output, type: 'Еда', size: 1, count: 1, desc: rec.outputDesc };
+let output = { id: Date.now() + Math.random(), name: rec.output, type: 'Еда', size: 1, count: 1, foodValue: 55, healthRestore: 10, desc: rec.outputDesc };
 if (state.location === 'Бункер (Убежище)') {
 state.bunkerStorage.push(output);
 } else {
 const slotIndex = findFirstEquipmentSlot(output);
 if (slotIndex >= 0) { output.equipmentSlot = slotIndex; state.activeLoadout.push(output); }
-else state.bunkerStorage.push(output);
+else addLog('Нет места для готового блюда. Освободите слот в рюкзаке и заберите еду.', 'danger');
 }
 addLog(`Вы ${rec.verb.toLowerCase()} ${rec.output} ${rec.prep}. Посуда осталась при вас.`, 'success');
 updateUI();
@@ -5513,14 +5835,8 @@ initMapPanZoom('map-viewport-1', 'map-content-1');
 }, 50);
 }
 
-function openLocationModal() {
+function buildMapPanelHtml(viewportId, contentId) {
 ensureExplorationState();
-const modalContent = document.getElementById('modal-content');
-modalContent.classList.add('map-modal');
-modalContent.style.maxWidth = 'min(96vw, 1280px)';
-modalContent.style.width = 'min(96vw, 1280px)';
-if (currentMapController?.destroy) currentMapController.destroy();
-currentMapController = null;
 const graph = buildMapGraph();
 const { nodes, edges, nodeLookup, currentLocationId, bounds } = graph;
 let svg = `<svg viewBox="0 0 ${bounds.width} ${bounds.height}" class="absolute inset-0 h-full w-full" role="img" aria-label="Карта известных дорог и локаций" focusable="false">`;
@@ -5569,17 +5885,28 @@ roadNotice = result.found
 }
 // (список локаций удалён — карта отображает всё необходимое прямо на узлах)
 // Список локаций убран — карта самодостаточна: переходы и статусы показаны прямо на узлах.
-const mapHtml = `${roadNotice}<div class="map-board map-viewport relative h-[52vh] min-h-[320px] max-h-[640px] rounded-lg border border-slate-700" id="map-viewport-1" style="cursor:grab;user-select:none"><div class="map-content" id="map-content-1" style="position:relative;width:${bounds.width}px;height:${bounds.height}px">${svg}${nodesHtml}</div><div class="map-zoom-controls"><button type="button" onclick="mapZoom(1)" class="map-zoom-btn" title="Приблизить" aria-label="Приблизить">+</button><button type="button" onclick="mapZoom(-1)" class="map-zoom-btn" title="Отдалить" aria-label="Отдалить">−</button><button type="button" onclick="focusCurrentMapLocation()" class="map-zoom-btn" title="К текущей локации" aria-label="К текущей локации">◎</button><button type="button" onclick="resetMapZoom()" class="map-zoom-btn" title="Показать всю карту" aria-label="Показать всю карту">⛶</button></div></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-400"><span><span class="text-amber-300">━━</span> Основная дорога</span><span><span class="text-lime-300">━━</span> Известный путь</span><span><span class="text-slate-500">┅┅</span> Туман войны</span><span>Время указано для доступных переходов</span></div>`;
+const html = `${roadNotice}<div class="map-board map-viewport relative h-[52vh] min-h-[320px] max-h-[640px] rounded-lg border border-slate-700" id="${viewportId}" style="cursor:grab;user-select:none"><div class="map-content" id="${contentId}" style="position:relative;width:${bounds.width}px;height:${bounds.height}px">${svg}${nodesHtml}</div><div class="map-zoom-controls"><button type="button" onclick="mapZoom(1)" class="map-zoom-btn" title="Приблизить" aria-label="Приблизить">+</button><button type="button" onclick="mapZoom(-1)" class="map-zoom-btn" title="Отдалить" aria-label="Отдалить">−</button><button type="button" onclick="focusCurrentMapLocation()" class="map-zoom-btn" title="К текущей локации" aria-label="К текущей локации">◎</button><button type="button" onclick="resetMapZoom()" class="map-zoom-btn" title="Показать всю карту" aria-label="Показать всю карту">⛶</button></div></div><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-slate-400"><span><span class="text-amber-300">━━</span> Основная дорога</span><span><span class="text-lime-300">━━</span> Известный путь</span><span><span class="text-slate-500">┅┅</span> Туман войны</span><span>Время указано для доступных переходов</span></div>`;
+return { html, bounds, currentNode: nodeLookup[currentLocationId], currentLocationId };
+}
+
+function openLocationModal() {
+const modalContent = document.getElementById('modal-content');
+modalContent.classList.add('map-modal');
+modalContent.style.maxWidth = 'min(96vw, 1280px)';
+modalContent.style.width = 'min(96vw, 1280px)';
+if (currentMapController?.destroy) currentMapController.destroy();
+currentMapController = null;
+const mapPanel = buildMapPanelHtml('map-viewport-1', 'map-content-1');
 const footerButtons = [];
-const currentLocation = locationsData.find(location => location.id === currentLocationId);
-const canExploreHere = currentLocationId === TOKMACHKA_ID || currentLocationId === TOPAR_ID || (currentLocation?.generated && !currentLocation?.roadside);
+const currentLocation = locationsData.find(location => location.id === mapPanel.currentLocationId);
+const canExploreHere = mapPanel.currentLocationId === TOKMACHKA_ID || mapPanel.currentLocationId === TOPAR_ID || (currentLocation?.generated && !currentLocation?.roadside);
 if (canExploreHere) {
-const roadsFromHere = countGeneratedRoadsFrom(currentLocationId);
+const roadsFromHere = countGeneratedRoadsFrom(mapPanel.currentLocationId);
 footerButtons.push({ text: `Исследовать дорогу (${roadsFromHere}/${MAX_NEW_ROADS_PER_LOCATION})`, onClick: exploreRandomRoad, keepOpen: true, className: 'bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' });
 }
 footerButtons.push({ text: 'Закрыть', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' });
-showModal('Карта маршрутов', mapHtml, footerButtons);
-setTimeout(() => initMapPanZoom('map-viewport-1', 'map-content-1', bounds, nodeLookup[currentLocationId]), 30);
+showModal('Карта маршрутов', mapPanel.html, footerButtons);
+setTimeout(() => initMapPanZoom('map-viewport-1', 'map-content-1', mapPanel.bounds, mapPanel.currentNode), 30);
 }
 
 
@@ -6047,6 +6374,10 @@ addLog(`Пес отказался идти с вами: он ${reasons.join(', '
 let targetName = target.name;
 let dogWasFollowing = state.dogTamed && state.dogFollowing && !target.village && !target.villageHouse;
 let displayedMinutes = Math.ceil(travelPlan.minutes * weatherData[state.weather].multiplier);
+if (state.timeMinutes + displayedMinutes > 1320) {
+showModal('Слишком поздно для перехода', `Путь займёт около ${displayedMinutes} минут, а прибытие будет уже после 22:00. Отдохните или подготовьтесь и отправляйтесь утром.`, [{ text: 'Понятно', className: 'bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]);
+return;
+}
 animateTravel(locId, function() {
 let travelMinutes = addTravelEffects(travelPlan.minutes);
 if (travelPlan.vehicle) {
@@ -6242,6 +6573,14 @@ addLog('Вы сняли с машины пригодные детали и ос�
 updateUI();
 }
 
+function showSearchResult(title, items) {
+const names = items.filter(Boolean).map(item => typeof item === 'string' ? item : item.name);
+const body = names.length
+? `<p class="text-emerald-300 font-semibold">Найдено:</p><ul class="list-disc pl-5 mt-2">${names.map(name => `<li>${name}</li>`).join('')}</ul>`
+: '<p class="text-slate-400">Ничего не найдено.</p>';
+showModal(title, body, [{ text: 'Продолжить', className: 'bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }]);
+}
+
 function searchCurrentLocation() {
 ensureExplorationState();
 let locationName = state.location;
@@ -6263,9 +6602,11 @@ const searchMinutes = randomInt(20, 45);
 if (!spendActionTime(searchMinutes, `Обыск: ${roomInfo.label}`)) return;
 const loot = searchBunkerRoom(roomId);
 let stored = 0;
-loot.forEach(item => { if (addFoundItem(item)) stored += 1; });
+const foundItems = [];
+loot.forEach(item => { if (addFoundItem(item)) { stored += 1; foundItems.push(item); } });
 state.searchedLocations[roomKey] = true;
 addLog(`Вы обыскали комнату «${roomInfo.label}» за ${searchMinutes} минут. Найдено предметов: ${stored}.`, 'success');
+showSearchResult(`Обыск: ${roomInfo.label}`, foundItems);
 } else {
 addLog(`В комнате «${roomInfo.label}» уже всё найдено.`);
 }
@@ -6285,10 +6626,11 @@ return;
 }
 if (!spendActionTime(30, 'Обыск дома в лесу')) return;
 state.searchedLocations[locationName] = true;
-addFoundItem(createItem(itemCatalog.find(item => item.name === 'Ружье')));
-addFoundItem(createItem(itemCatalog.find(item => item.name === 'Разбитое радио')));
+const houseItems = [createItem(itemCatalog.find(item => item.name === 'Ружье')), createItem(itemCatalog.find(item => item.name === 'Разбитое радио'))];
+houseItems.forEach(item => addFoundItem(item));
 state.radioFound = true;
 addLog('После зачистки вы обыскали дом и нашли дробовик и разбитое радио.', 'success');
+showSearchResult('Обыск дома в лесу', houseItems);
 } else {
 addLog('В доме уже нашли все ценные предметы.');
 }
@@ -6306,6 +6648,7 @@ state.searchedLocations[locationName] = true;
 const medicalItem = createItem(itemCatalog.find(item => item.name === (Math.random() < 0.5 ? 'Бинты' : 'Аптечка')));
 addFoundItem(medicalItem);
 addLog(`В аптечном шкафу осталось: <b>${medicalItem.name}</b>. Фельдшер просит не тратить лекарства зря.`, 'success');
+showSearchResult('Обыск фельдшерского пункта', [medicalItem]);
 updateUI();
 return;
 }
@@ -6340,13 +6683,16 @@ const conditionPenalty = Math.max(0, 30 - state.hunger) * 0.003 + Math.max(0, 30
 const chance = Math.max(0.3, profile.chance - (progress.attempts - 1) * 0.16 - conditionPenalty);
 if (Math.random() > chance) {
 addLog(`Вы потратили ${searchMinutes} минут, но этот участок оказался пустым. Попытка ${progress.attempts}/${profile.maxAttempts}.`, 'info');
+showSearchResult('Результат поиска', []);
 } else {
 const itemCount = locationKey === 'lake' && progress.attempts > 1 ? randomInt(1, 2) : 1;
+const foundItems = [];
 for (let index = 0; index < itemCount; index++) {
 const item = chooseRandomItem(locationKey, progress.foundItemNames);
 progress.foundItemNames.push(item.name);
-if (addFoundItem(item)) addLog(`После ${searchMinutes} минут поиска найдено: <b>${item.name}</b>.`, 'success');
+if (addFoundItem(item)) { foundItems.push(item); addLog(`После ${searchMinutes} минут поиска найдено: <b>${item.name}</b>.`, 'success'); }
 }
+showSearchResult('Результат поиска', foundItems);
 }
 if (progress.attempts >= profile.maxAttempts) addLog('Эта локация обследована полностью.', 'info');
 else addLog(`Осталось этапов поиска: ${profile.maxAttempts - progress.attempts}.`);
@@ -6359,21 +6705,25 @@ showModal('Здесь уже обыскивали', 'В этом месте бо
 return;
 }
 
-state.searchedLocations[locationName] = true;
 let chances = { forest: 0.7, house: 0.62, village: 0.45, lake: 0.82 };
 if (Math.random() > (chances[locationKey] || 0.5)) {
 addLog(`Обыск завершен, но полезных предметов здесь не оказалось.`);
+showSearchResult('Результат обыска', []);
 updateUI();
 return;
 }
 
 let itemCount = locationKey === 'lake' ? randomInt(1, 2) : 1;
 let foundNames = [];
+let foundItems = [];
 for (let index = 0; index < itemCount; index++) {
 let foundItem = chooseRandomItem(locationKey, foundNames);
 foundNames.push(foundItem.name);
-if (addFoundItem(foundItem)) addLog(`В локации найден предмет: <b>${foundItem.name}</b>.`, 'success');
+if (addFoundItem(foundItem)) { foundItems.push(foundItem); addLog(`В локации найден предмет: <b>${foundItem.name}</b>.`, 'success'); }
 }
+if (foundItems.length === itemCount) state.searchedLocations[locationName] = true;
+else addLog('Часть добычи осталась на месте: освободите место и вернитесь позже.', 'warning');
+showSearchResult('Результат обыска', foundItems);
 updateUI();
 }
 
@@ -6677,6 +7027,20 @@ if (ammo.count <= 0) state.activeLoadout = state.activeLoadout.filter(item => it
 return true;
 }
 
+function openCombatTactics(target, isForest = false) {
+let title = isForest ? 'Бой за дом' : 'Тактика боя';
+let targetName = isForest ? 'опасными бабками' : target.name;
+let combat = getCombatWeapon();
+let carefulAction = combat && isMeleeWeapon(combat.item.name) ? 'Выждать момент' : 'Прицелиться и выждать';
+let carefulHint = combat && isMeleeWeapon(combat.item.name) ? 'Выжидание помогает поймать момент для точного удара и снижает риск ответного удара.' : 'Прицеливание повышает шанс попадания и снижает риск ответного удара.';
+showModal(title, `<p>Выберите темп против ${targetName}.</p><p class="mt-2 text-xs text-slate-400">${carefulHint} Штурм сильнее давит противника, но оставляет вас открытым.</p>`, [
+{ text: 'Быстрый удар', className: 'bg-cyan-700 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => isForest ? attackForestHouse('quick') : attackNpc(target, 'quick'), keepOpen: true },
+{ text: carefulAction, className: 'bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => isForest ? attackForestHouse('aim') : attackNpc(target, 'aim'), keepOpen: true },
+{ text: 'Пойти в штурм', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => isForest ? attackForestHouse('rush') : attackNpc(target, 'rush'), keepOpen: true },
+{ text: 'Отступить', className: 'bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
+]);
+}
+
 function openNpcEncounter(locationName) {
 ensureExplorationState();
 if (locationName === 'Справа: Дом в лесу') {
@@ -6688,11 +7052,11 @@ state.houseEncounters[locationName] = 'visited';
 let npc = getNpcProfile(locationName);
 let html = `<p>В доме вы заметили персонажа: <b>${npc.name}</b>.</p><p class="mt-2 text-xs text-slate-400">Настрой: <span class="text-amber-300">${npc.attitude}</span> · доверие: <span class="text-cyan-300">${npc.trust > 0 ? '+' : ''}${npc.trust}</span>. Выберите действие.</p>`;
 let encounterButtons = [
-{ text: "Напасть", className: "bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => attackNpc(npc), keepOpen: true },
+{ text: "Напасть", className: "bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => openCombatTactics(npc), keepOpen: true },
 { text: "Подойти и подслушать", className: "bg-cyan-700 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => listenToNpc(npc), keepOpen: true },
 { text: "Незаметно уйти", className: "bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => sneakAwayFromNpc(npc), keepOpen: true }
 ];
-if (npc.canQuest && !state.activeQuest) encounterButtons.splice(1, 0, { text: "Поговорить о задании", className: "bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => offerDeliveryQuest(npc) });
+if (npc.canQuest && getActiveQuestList().length < 2) encounterButtons.splice(1, 0, { text: "Поговорить о задании", className: "bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => offerDeliveryQuest(npc) });
 showModal("Встреча в доме", html, encounterButtons);
 }
 
@@ -6718,26 +7082,78 @@ let templates = [
 { title: 'Проверить следы', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(10, 15), rewardItem: null, rewardCount: 0, detail: 'Заказчика тревожат свежие следы у дороги. Осмотрите место и вернитесь с докладом.' },
 { title: 'Разведать безопасный путь', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(12, 18), rewardItem: null, rewardCount: 0, detail: 'Проверьте, можно ли пройти к точке без риска для следующей группы.' },
 { title: 'Осмотреть медпункт', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(10, 16), rewardItem: null, rewardCount: 0, detail: 'Фельдшер ждет сведения о лекарствах и состоянии дороги.' },
-{ title: 'Проверить источник воды', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(8, 14), rewardItem: null, rewardCount: 0, detail: 'Проверьте колонку после дождя и сообщите, безопасно ли набирать воду.' }
+{ title: 'Проверить источник воды', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(8, 14), rewardItem: null, rewardCount: 0, detail: 'Проверьте колонку после дождя и сообщите, безопасно ли набирать воду.' },
+{ title: 'Осмотреть тайник', type: 'search', itemName: null, rewardType: 'material', reward: 0, rewardItem: 'Батарейки', rewardCount: 2, detail: 'Осмотрите указанное место полностью и найдите следы старого тайника.' },
+{ title: 'Следы пропавшей группы', type: 'chain', rewardType: 'credits', reward: randomInt(24, 36), rewardItem: null, rewardCount: 0, detail: 'Сначала проверьте следы в одном месте, затем подтвердите находку у старой дороги.', stages: [
+{ type: 'scout', detail: 'Проверьте следы и осмотрите окрестности.' },
+{ type: 'search', detail: 'Тщательно обследуйте вторую точку и вернитесь с докладом.' }
+] },
+{ title: 'Запасы для семьи', type: 'delivery', itemName: 'Сухари', rewardType: 'heal', reward: randomInt(8, 18), rewardItem: null, rewardCount: 0, detail: 'В одиноком доме заканчивается еда. Хозяева обещают отплатить помощью.' },
+{ title: 'Деталь для генератора', type: 'delivery', itemName: 'Металлический лом', rewardType: 'material', reward: 0, rewardItem: 'Батарейки', rewardCount: 2, detail: 'Механик пытается запустить старый генератор и просит подходящую деталь.' },
+{ title: 'Улов для кухни', type: 'delivery', itemName: 'Сырая рыба', rewardType: 'material', reward: 0, rewardItem: 'Древесина', rewardCount: 2, detail: 'Поселку нужна свежая рыба, а взамен обещают дрова для бункера.' },
+{ title: 'Следы у переправы', type: 'scout', itemName: null, rewardType: 'credits', reward: randomInt(14, 22), rewardItem: null, rewardCount: 0, detail: 'Кто-то видел ночью свет у озера. Проверьте берег и вернитесь с докладом.' },
+{ title: 'Проверка старого гаража', type: 'search', itemName: null, rewardType: 'material', reward: 0, rewardItem: 'Изолента', rewardCount: randomInt(1, 3), detail: 'Осмотрите гараж полностью: внутри могли остаться детали для транспорта.' },
+{ title: 'Сигнал бедствия у дороги', type: 'choice', itemName: null, rewardType: 'credits', reward: randomInt(18, 28), rewardItem: null, rewardCount: 0, detail: 'На старой частоте передали короткий сигнал. Возможно, кто-то застрял рядом с дорогой.' }
 ];
 let selected = templates[randomInt(0, templates.length - 1)];
-return {
+let quest = {
 ...selected,
 giver: state.location,
  giverName: npc.name,
  target,
  reward: selected.reward || 0
 };
+if (quest.type === 'chain') {
+quest.chainType = 'chain';
+quest.stages = quest.stages.map(stage => ({ ...stage, target: target }));
+quest.stages[1].target = possibleTargets.find(candidate => candidate !== target) || target;
+quest.stageIndex = 0;
+quest.target = quest.stages[0].target;
+quest.type = quest.stages[0].type;
+quest.detail = quest.stages[0].detail;
+}
+return quest;
+}
+
+function syncQuestStage(quest) {
+if (!Array.isArray(quest.stages)) return;
+let stage = quest.stages[quest.stageIndex || 0];
+if (!stage) return;
+quest.target = stage.target;
+quest.type = stage.type;
+quest.itemName = stage.itemName || null;
+quest.detail = stage.detail || quest.detail;
+}
+
+function getQuestObjectiveText(quest) {
+if (quest.type === 'search') return `тщательно осмотреть <b>${quest.target}</b>`;
+if (quest.type === 'scout') return `разведать <b>${quest.target}</b>`;
+if (quest.type === 'choice') return `проверить сигнал бедствия у <b>${quest.target}</b>`;
+return `доставить <b>${quest.itemName}</b> в <b>${quest.target}</b>`;
+}
+
+function getActiveQuestList() {
+if (!Array.isArray(state.activeQuests)) state.activeQuests = [];
+if (state.activeQuest && !state.activeQuests.includes(state.activeQuest)) state.activeQuests.unshift(state.activeQuest);
+if (!state.activeQuest && state.activeQuests.length) state.activeQuest = state.activeQuests[0];
+return state.activeQuests;
+}
+
+function removeActiveQuest(quest) {
+let activeQuests = getActiveQuestList();
+let index = activeQuests.indexOf(quest);
+if (index >= 0) activeQuests.splice(index, 1);
+state.activeQuest = activeQuests[0] || null;
 }
 
 function offerDeliveryQuest(npc) {
-if (state.activeQuest) {
+if (getActiveQuestList().length >= 2) {
 showModal("Задание уже взято", "Сначала завершите текущее поручение.", [{ text: "ОК", className: "bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-semibold" }]);
 return;
 }
 let quest = generateRandomQuestTemplate(npc);
 quest.source = 'npc';
-let objective = quest.type === 'scout' ? `Осмотрите место: <b>${quest.target}</b>` : `Доставьте <b>${quest.itemName}</b> в <b>${quest.target}</b>`;
+let objective = getQuestObjectiveText(quest);
 let reward = quest.rewardType === 'credits' ? `${quest.reward} жетонов` : quest.rewardType === 'heal' ? `лечение на ${quest.reward}%` : `${quest.rewardItem} ×${quest.rewardCount}`;
 let trust = state.relationships[npc.name] || 0;
 let deadline = state.day + (trust >= 20 ? 3 : trust <= -20 ? 1 : 2);
@@ -6755,16 +7171,50 @@ else state.activeLoadout = state.activeLoadout.filter(candidate => candidate !==
 return true;
 }
 
-function handleQuestArrival(locationName) {
+function resolveChoiceQuest(choice) {
+let quest = state.activeQuest;
+if (!quest || quest.type !== 'choice') return;
+closeModal();
+if (choice === 'help') {
+if (!spendActionTime(45, 'Помощь выжившему')) return;
+state.tradeCredits += quest.reward;
+adjustRelationship(quest.giverName || quest.giver, 10);
+addLog(`Вы помогли людям у дороги и получили ${quest.reward} жетонов. Доверие выросло.`, 'success');
+} else {
+adjustRelationship(quest.giverName || quest.giver, -8);
+addLog('Вы решили не вмешиваться в чужую беду. Заказчик запомнит этот выбор.', 'danger');
+}
+removeActiveQuest(quest);
+updateUI();
+}
+
+function handleSingleQuestArrival(locationName) {
 let quest = state.activeQuest;
 if (!quest) return;
 if (!quest.delivered && locationName === quest.target) {
-if (quest.type !== 'scout' && !takeQuestItem(quest.itemName)) {
+if (quest.type === 'choice') {
+showModal('Сигнал бедствия', `<p>${quest.detail}</p><p class="mt-2 text-xs text-slate-400">На помощь уйдет около 45 минут, но решение повлияет на отношение заказчика.</p>`, [
+{ text: 'Помочь', className: 'bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => resolveChoiceQuest('help'), keepOpen: true },
+{ text: 'Пройти мимо', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => resolveChoiceQuest('ignore'), keepOpen: true }
+]);
+return;
+}
+if (quest.type === 'delivery' && !takeQuestItem(quest.itemName)) {
 addLog(`Вы прибыли к получателю, но у вас нет предмета <b>${quest.itemName}</b>.`, 'danger');
 return;
 }
+if (quest.type === 'search' && !state.searchedLocations[locationName]) {
+addLog(`Задание требует полного осмотра места «${locationName}». Используйте кнопку обыска.`, 'warning');
+return;
+}
+if (Array.isArray(quest.stages) && (quest.stageIndex || 0) < quest.stages.length - 1) {
+quest.stageIndex = (quest.stageIndex || 0) + 1;
+syncQuestStage(quest);
+addLog(`Этап выполнен. Следующая цель: ${getQuestObjectiveText(quest)}.`, 'success');
+return;
+}
 quest.delivered = true;
-if (quest.type === 'scout') {
+if (quest.type === 'scout' || quest.type === 'search') {
 addLog(`Разведка завершена: ${quest.detail} Теперь вернитесь к ${quest.giverName}, чтобы получить оплату.`, 'success');
 } else if (quest.rewardType === 'heal') {
 state.health = Math.min(100, state.health + quest.reward);
@@ -6784,16 +7234,26 @@ addLog(`Поручение завершено. Вы получили ${quest.rew
 }
 adjustRelationship(quest.giverName || quest.giver, 10);
 addLog(`${quest.giverName || 'Заказчик'} запомнит, что вы сдержали слово. Доверие выросло.`, 'success');
-state.activeQuest = null;
+removeActiveQuest(quest);
 }
 }
 
+function handleQuestArrival(locationName) {
+getActiveQuestList().slice().forEach(quest => {
+state.activeQuest = quest;
+handleSingleQuestArrival(locationName);
+});
+state.activeQuest = getActiveQuestList()[0] || null;
+}
+
 function processQuestDeadline() {
-const quest = state.activeQuest;
-if (!quest || state.day <= quest.deadlineDay) return;
-state.activeQuest = null;
+getActiveQuestList().slice().forEach(quest => {
+if (state.day <= quest.deadlineDay) return;
+removeActiveQuest(quest);
 adjustRelationship(quest.giverName || quest.giver, -10);
 addLog(`Поручение «${quest.title || quest.itemName}» просрочено. Заказчик больше не ждет доклад.`, 'danger');
+});
+state.activeQuest = getActiveQuestList()[0] || null;
 }
 
 function openForestHouseEncounter() {
@@ -6802,12 +7262,12 @@ if (state.forestHouseCleared) return;
 let remaining = state.forestHouseEnemiesRemaining;
 let html = `<p>В доме вас встречают <b>три опасные бабки</b>, вооруженные и готовые защищать припасы.</p><p class="mt-2 text-xs text-slate-400">Осталось противниц: <span class="text-rose-300 font-bold">${remaining}</span>. После победы дом можно будет обыскать.</p>`;
 showModal('Опасные бабки в доме', html, [
-{ text: 'Напасть', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: attackForestHouse, keepOpen: true },
+{ text: 'Напасть', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => openCombatTactics(null, true), keepOpen: true },
 { text: 'Уйти', className: 'bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
 ]);
 }
 
-function attackForestHouse() {
+function attackForestHouse(strategy = 'quick') {
 closeModal();
 let combat = getCombatWeapon();
 if (!combat) {
@@ -6823,6 +7283,9 @@ return;
 let chance = weaponStats?.attackForest ?? 0.6;
 chance += Math.min(0.08, combat.ammo * 0.02);
 if (state.dogTamed && state.dogFollowing) chance += 0.06;
+if (strategy === 'aim') chance += 0.14;
+if (strategy === 'rush') chance += 0.08;
+chance = Math.min(0.94, chance);
 if (weaponStats?.needsAmmo) consumeCombatAmmo();
 if (Math.random() < chance) {
 state.forestHouseEnemiesRemaining = Math.max(0, state.forestHouseEnemiesRemaining - 1);
@@ -6836,17 +7299,19 @@ return;
 }
 } else {
 let damage = randomInt(12, 24);
+if (strategy === 'aim') damage = Math.max(6, damage - 6);
+if (strategy === 'rush') damage += 6;
 state.health = Math.max(0, state.health - damage);
-addLog(`Бабки отбились. Вы получили ${damage}% урона.`, 'danger');
+addLog(`${strategy === 'rush' ? 'Штурм захлебнулся' : strategy === 'aim' ? 'Вы слишком долго выжидали' : 'Бабки отбились'}. Вы получили ${damage}% урона.`, 'danger');
 }
 updateUI();
 showModal('Бой продолжается', `<p>Шанс победить в атаке был ${Math.round(chance * 100)}%.</p><p class="mt-2 text-amber-300">Осталось противниц: ${state.forestHouseEnemiesRemaining}.</p>`, [
-{ text: 'Продолжить бой', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: openForestHouseEncounter, keepOpen: true },
+{ text: 'Выбрать тактику', className: 'bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer', onClick: () => openCombatTactics(null, true), keepOpen: true },
 { text: 'Отступить', className: 'bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer' }
 ]);
 }
 
-function attackNpc(npc) {
+function attackNpc(npc, strategy = 'quick') {
 let combat = getCombatWeapon();
 if (!combat) {
 state.houseEncounters[state.location] = 'hostile';
@@ -6874,9 +7339,15 @@ chance += Math.min(0.1, combat.ammo * 0.025);
 consumeCombatAmmo();
 }
 chance += npc.attitude === 'мирно' ? 0.08 : npc.attitude === 'агрессивно' ? -0.1 : 0;
+if (strategy === 'aim') chance += 0.14;
+if (strategy === 'rush') chance += 0.08;
+chance = Math.min(0.94, chance);
 let attackSuccess = Math.random() < chance;
 let defenseChance = weaponStats?.defense ?? 0.45;
 defenseChance += combat.ammo ? Math.min(0.08, combat.ammo * 0.02) : 0;
+if (strategy === 'aim') defenseChance += 0.08;
+if (strategy === 'rush') defenseChance -= 0.14;
+defenseChance = Math.max(0.12, Math.min(0.9, defenseChance));
 const isAggressiveHouseFight = state.location.includes('Дом 1 с капкан') || npc.name === 'Хозяин с капканом';
 state.houseEncounters[state.location] = 'hostile';
 if (attackSuccess) {
@@ -6898,6 +7369,8 @@ showModal(isAggressiveHouseFight ? "Бой в доме" : "Атака успеш
 } else {
 let defended = Math.random() < defenseChance;
 let damage = defended ? 8 : npc.attitude === 'агрессивно' ? 24 : 16;
+if (strategy === 'aim') damage = Math.max(4, damage - 5);
+if (strategy === 'rush') damage += 6;
 if (state.dogTamed && state.dogFollowing) {
 let dogBlockChance = 0.16;
 if (state.health > 60) dogBlockChance += 0.06;
@@ -6968,7 +7441,7 @@ if (trust >= 20) encounter.attitude = 'мирно';
 else if (trust <= -20) encounter.attitude = 'агрессивно';
 let html = `<p>На дороге вам встретились: <b>${encounter.name}</b>.</p><p class="mt-2 text-xs text-slate-400">Это ${encounter.kind}. Поведение: <span class="text-amber-300">${encounter.attitude}</span>.</p>`;
 showModal("Встреча на дороге", html, [
-{ text: "Напасть", className: "bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => attackNpc(encounter), keepOpen: true },
+{ text: "Напасть", className: "bg-rose-700 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => openCombatTactics(encounter), keepOpen: true },
 { text: "Подойти и прислушаться", className: "bg-cyan-700 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => listenToNpc(encounter), keepOpen: true },
 { text: "Незаметно уйти", className: "bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold cursor-pointer", onClick: () => sneakAwayFromNpc(encounter), keepOpen: true }
 ]);
@@ -7187,6 +7660,286 @@ updateUI();
 
 }
 
+
+
+/* ===== Адаптив: табы / мобильная шапка / лог-оверлей (Бункер: Топар) ===== */
+function switchTab(tabId, btnElement) {
+  if (window.innerWidth >= 768) return;
+  document.querySelectorAll('.tab-content').forEach(function(tab) { tab.classList.remove('active'); });
+  document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(function(btn) { btn.classList.remove('active'); });
+  var targetTab = document.getElementById(tabId);
+  if (targetTab) targetTab.classList.add('active');
+  if (btnElement) btnElement.classList.add('active');
+  try { renderLocationInfo(); } catch (e) {}
+  try { renderEmbeddedMap(tabId === 'tab-map'); } catch (e) {}
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleMobileLog(open) {
+  var ov = document.getElementById('mobile-log-overlay');
+  var body = document.getElementById('mobile-log-body');
+  var src = document.getElementById('game-screen');
+  if (!ov || !body || !src) return;
+  if (open) { body.innerHTML = src.innerHTML; ov.classList.add('open'); }
+  else { ov.classList.remove('open'); }
+}
+function toggleBunkerLog() {
+  var src = document.getElementById('game-screen');
+  var btn = document.getElementById('m-log-toggle');
+  if (!src) return;
+  var collapsed = src.classList.toggle('m-collapsed');
+  if (btn) btn.textContent = collapsed ? '📜 Показать весь журнал' : '📜 Свернуть журнал';
+  if (!collapsed) { try { src.scrollTop = src.scrollHeight; } catch (e) {} }
+}
+function syncMobileTopBar() {
+  try {
+    if (typeof state === 'undefined') return;
+    var loc = document.getElementById('mobile-loc-display');
+    if (loc) loc.textContent = state.location || 'Бункер';
+    var set = function(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+    set('mob-hp', (state.health == null ? 100 : state.health) + '%');
+    set('mob-food', (state.hunger == null ? 100 : state.hunger) + '%');
+    set('mob-water', (state.thirst == null ? 100 : state.thirst) + '%');
+    set('mob-fatigue', (state.fatigue == null ? 0 : state.fatigue) + '%');
+    set('mob-day', state.day == null ? 1 : state.day);
+    set('mob-time', (typeof formatGameTime === 'function') ? formatGameTime() : '');
+  } catch (e) {}
+}
+
+var __adaptiveMode = null;
+var __origNodes = null;
+var __embeddedMapKey = '';
+function renderEmbeddedMap(force) {
+  try {
+    var body = document.getElementById('embedded-map-body');
+    var locEl = document.getElementById('embedded-map-loc');
+    if (!body || typeof buildMapPanelHtml !== 'function') return;
+    if (typeof state === 'undefined' || !state.location) return;
+    var key = String(state.location) + '|' + String(state.day) + '|' + String(state.hasPaperMap) + '|' + String((state.generatedLocations || []).length) + '|' + String(state.lastRoadExploration ? state.lastRoadExploration.locationName + state.lastRoadExploration.searchMinutes : '');
+    if (!force && key === __embeddedMapKey && body.querySelector('#embedded-map-viewport')) return;
+    __embeddedMapKey = key;
+    var panel = buildMapPanelHtml('embedded-map-viewport', 'embedded-map-content');
+    body.innerHTML = panel.html;
+    if (locEl) locEl.textContent = '📍 ' + state.location;
+    setTimeout(function() {
+      try {
+        if (typeof initMapPanZoom === 'function') initMapPanZoom('embedded-map-viewport', 'embedded-map-content', panel.bounds, panel.currentNode);
+      } catch (e) {}
+    }, 30);
+  } catch (e) {}
+}
+function renderLocationInfo() {
+  try {
+    if (typeof state === 'undefined' || !state.location) return;
+    var nameEl = document.getElementById('location-info-name');
+    var descEl = document.getElementById('location-info-desc');
+    if (!nameEl || !descEl) return;
+    nameEl.textContent = '📍 ' + state.location;
+    var desc = '';
+    try {
+      var curId = (typeof getCurrentLocationId === 'function') ? getCurrentLocationId() : null;
+      var loc = (typeof locationsData !== 'undefined' && curId !== null)
+        ? locationsData.find(function(x) { return x.id === curId; })
+        : null;
+      if (loc && loc.desc) desc = loc.desc;
+    } catch (e) {}
+    descEl.textContent = desc;
+  } catch (e) {}
+}
+function __recordOrigins() {
+  var center = document.getElementById('pc-center-col');
+  var right = document.getElementById('pc-right-col');
+  var header = document.querySelector('#app > header');
+  var saveBtn = null;
+  try { saveBtn = document.querySelector('button[onclick="saveCurrentGame()"]'); } catch (e) {}
+  var headerActions = saveBtn ? saveBtn.parentElement : null;
+  var grids = center ? center.querySelectorAll(':scope > div.grid') : [];
+  if (!grids.length && center) {
+    grids = Array.prototype.filter.call(center.children, function(n) {
+      return n.tagName === 'DIV' && (n.className || '').indexOf('grid') !== -1;
+    });
+  }
+  __origNodes = {
+    center: center, right: right, header: header,
+    headerActions: headerActions,
+    headerNext: headerActions ? headerActions.nextSibling : null,
+    centerKids: center ? Array.prototype.slice.call(center.children) : [],
+    rightKids: right ? Array.prototype.slice.call(right.children) : [],
+    quick: grids[0] || null, hub: grids[1] || null,
+    quickBtns: grids[0] ? Array.prototype.slice.call(grids[0].children) : [],
+    hubBtns: grids[1] ? Array.prototype.slice.call(grids[1].children) : [],
+    stayGrid: null, goGrid: null, locHub: null, bunkHub: null
+  };
+}
+
+function __applyMobile() {
+  if (__adaptiveMode === 'mobile') return;
+  if (!__origNodes) __recordOrigins();
+  var O = __origNodes;
+  if (!O || !O.center) return;
+  var l = document.getElementById('tab-location-inner');
+  var b = l;
+  var inv = document.getElementById('tab-inventory-inner');
+  if (!b || !l || !inv) return;
+  var q = function(id) { return document.getElementById(id); };
+  var mv = function(node, parent) { if (node && parent) parent.appendChild(node); };
+  var mvAfter = function(node, parent, anchor) {
+    if (!node || !parent) return;
+    if (anchor && anchor.parentElement === parent && anchor.nextSibling) parent.insertBefore(node, anchor.nextSibling);
+    else parent.appendChild(node);
+  };
+  // Заголовки вкладок — всегда первые (они уже в разметке, но подстрахуемся от повторных вызовов)
+  ['tab-bunker-inner', 'tab-location-inner', 'tab-map-inner', 'tab-inventory-inner'].forEach(function(innerId) {
+    var inner = document.getElementById(innerId);
+    if (!inner) return;
+    var title = inner.querySelector('.m-tab-title');
+    if (title && inner.firstChild !== title) inner.insertBefore(title, inner.firstChild);
+  });
+  // Карточки-подсказки — сразу после заголовков
+  var locCard = q('location-info-card');
+  var locTitle = l.querySelector('.m-tab-title');
+  if (locCard && locTitle && locCard.previousSibling !== locTitle) l.insertBefore(locCard, locTitle.nextSibling);
+  var mapPanel = q('embedded-map');
+  var mapTitle = document.querySelector('#tab-map-inner .m-tab-title');
+  if (mapPanel && mapTitle && mapPanel.previousSibling !== mapTitle) {
+    var mapInner = document.getElementById('tab-map-inner');
+    if (mapInner) mapInner.insertBefore(mapPanel, mapTitle.nextSibling);
+  }
+  // 🏠 База: квесты -> завершить день -> лог(тоггл+экран) -> быт -> комнаты -> сохранить/меню
+  mv(q('quest-widget'), b);
+  mv(q('quest-status'), b);
+  mv(q('expedition-status'), b);
+  // Хаб делим сразу: завершить день — в Базу следом за квестами, дома поселка — в Локацию
+  var locHub = null, bunkHub = null;
+  if (O.hub && O.hub.parentElement) {
+    locHub = O.hub.cloneNode(false); bunkHub = O.hub.cloneNode(false);
+    var rb = q('route-button');
+    if (rb) rb.style.display = 'none';
+    mv(q('village-nav-button'), locHub);
+    mv(q('end-day-button'), bunkHub);
+    O.hubBtns.forEach(function(btn) { if (btn.parentElement === O.hub) bunkHub.appendChild(btn); });
+    O.hub.parentElement.replaceChild(bunkHub, O.hub);
+    O.locHub = locHub; O.bunkHub = bunkHub;
+    mv(bunkHub, b);
+  }
+  // 📍 На месте: карточка точки уже в разметке, сюда едут помещения и выездные действия
+  mv(q('village-rooms'), l);
+  mv(q('location-scene-panel'), l);
+  if (locHub && locHub.children.length) l.appendChild(locHub);
+  var gs = q('game-screen');
+  if (gs) {
+    var tg = document.getElementById('m-log-toggle');
+    if (!tg) {
+      tg = document.createElement('button');
+      tg.id = 'm-log-toggle';
+      tg.className = 'm-log-toggle';
+      tg.textContent = '📜 Показать весь журнал';
+      tg.setAttribute('onclick', 'toggleBunkerLog()');
+    }
+    if (gs.parentElement) gs.parentElement.insertBefore(tg, gs);
+    mv(gs, b);
+    mv(tg, b);
+    try {
+      if (window.innerWidth < 768 && !gs.classList.contains('m-collapsed')) {
+        gs.classList.add('m-collapsed');
+      }
+    } catch (e) {}
+  }
+  var br = q('bunker-rooms');
+  if (br) {
+    mv(br, b);
+    // комнаты — после бытовых кнопок: сначала действия, потом осмотреться
+  }
+  var lastBunkerAnchor = function() {
+    var kids = b.children;
+    return kids.length ? kids[kids.length - 1] : null;
+  };
+  var OUT = ['sleep-vehicle-button','sleep-outside-button','wait-button','fish-button','search-location-button','road-shop-button','transport-button','explore-road-button','gas-station-button'];
+  if (O.quick && O.quick.parentElement) {
+    var stay = O.quick.cloneNode(false), go = O.quick.cloneNode(false);
+    Array.prototype.slice.call(O.quick.children).forEach(function(btn) {
+      if (OUT.indexOf(btn.id) !== -1) go.appendChild(btn); else stay.appendChild(btn);
+    });
+    O.quick.parentElement.replaceChild(stay, O.quick);
+    O.stayGrid = stay; O.goGrid = go;
+    mvAfter(stay, b, lastBunkerAnchor());
+    if (go.children.length) l.appendChild(go);
+  }
+  if (O.right) O.rightKids.forEach(function(n) { inv.appendChild(n); });
+  mv(O.headerActions, b);
+  O.center.classList.add('adaptive-emptied');
+  if (O.right) O.right.classList.add('adaptive-emptied');
+  __adaptiveMode = 'mobile';
+}
+
+function __applyDesktop() {
+  if (__adaptiveMode === 'desktop') return;
+  if (!__origNodes || __adaptiveMode === null) { __adaptiveMode = 'desktop'; return; }
+  var O = __origNodes;
+  var byId = {};
+  O.quickBtns.forEach(function(btn) { if (btn.id) byId[btn.id] = btn; });
+  O.hubBtns.forEach(function(btn) { if (btn.id) byId[btn.id] = btn; });
+  if (O.stayGrid && O.quick) {
+    var qid = function(id) { return byId[id] || document.getElementById(id); };
+    O.quickBtns.forEach(function(orig) { var n = qid(orig.id) || orig; O.quick.appendChild(n); });
+    if (O.stayGrid.parentElement) O.stayGrid.parentElement.replaceChild(O.quick, O.stayGrid);
+    if (O.goGrid && O.goGrid.parentElement) O.goGrid.parentElement.removeChild(O.goGrid);
+    O.stayGrid = null; O.goGrid = null;
+  }
+  if (O.bunkHub && O.hub) {
+    var hid = function(id) { return byId[id] || document.getElementById(id); };
+    O.hubBtns.forEach(function(orig) { var n = hid(orig.id) || orig; if (n && n.style) n.style.display = ''; O.hub.appendChild(n); });
+    if (O.bunkHub.parentElement) O.bunkHub.parentElement.replaceChild(O.hub, O.bunkHub);
+    if (O.locHub && O.locHub.parentElement) O.locHub.parentElement.removeChild(O.locHub);
+    O.locHub = null; O.bunkHub = null;
+  }
+  if (O.center) {
+    O.centerKids.forEach(function(n) { O.center.appendChild(n); });
+    O.center.classList.remove('adaptive-emptied');
+    // тоггл лога — только для мобилы: вернуть его на место и развернуть лог
+    var tg = document.getElementById('m-log-toggle');
+    var gs = document.getElementById('game-screen');
+    if (tg && gs && gs.parentElement) gs.parentElement.insertBefore(tg, gs);
+    if (gs) gs.classList.remove('m-collapsed');
+  }
+  if (O.right) {
+    O.rightKids.forEach(function(n) { O.right.appendChild(n); });
+    O.right.classList.remove('adaptive-emptied');
+  }
+  if (O.headerActions && O.header) {
+    if (O.headerNext && O.headerNext.parentElement === O.header) O.header.insertBefore(O.headerActions, O.headerNext);
+    else O.header.appendChild(O.headerActions);
+  }
+  __adaptiveMode = 'desktop';
+}
+function ensureAdaptiveLayout() {
+  try {
+    if (window.innerWidth >= 768) __applyDesktop();
+    else __applyMobile();
+  } catch (e) {}
+}
+(function __adaptiveBoot() {
+  document.addEventListener('DOMContentLoaded', function() {
+    ensureAdaptiveLayout();
+    syncMobileTopBar();
+    try { renderLocationInfo(); } catch (e) {}
+    try { renderEmbeddedMap(true); } catch (e) {}
+    var ov = document.getElementById('mobile-log-overlay');
+    if (ov) ov.addEventListener('click', function(e) { if (e.target === ov) toggleMobileLog(false); });
+  });
+  window.addEventListener('resize', function() { ensureAdaptiveLayout(); });
+  if (typeof updateUI === 'function' && !window.__adaptiveWrapped) {
+    window.__adaptiveWrapped = true;
+    var __origUpdateUI = updateUI;
+    updateUI = function() {
+      var r = __origUpdateUI.apply(this, arguments);
+      try { ensureAdaptiveLayout(); } catch (e) {}
+      try { syncMobileTopBar(); } catch (e) {}
+      try { renderLocationInfo(); } catch (e) {}
+      try { renderEmbeddedMap(false); } catch (e) {}
+      return r;
+    };
+  }
+})();
 
 
 initializeSaveSystem();
